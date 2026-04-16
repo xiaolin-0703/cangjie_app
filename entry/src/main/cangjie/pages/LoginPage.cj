@@ -13,11 +13,15 @@ import ohos_app_cangjie_entry.service.AuthService
 class LoginPage {
     @State var email: String = ""
     @State var code: String = ""
-    @State var step: String = "email" // 状态: "email" -> "code" -> "success"
+    @State var step: String = "email" // "email" -> "code" -> "jump"
     @State var errorMsg: String = ""
     @State var sending: Bool = false
     @State var verifying: Bool = false
 
+    // 🌟 核心：记录后端告诉我们要去哪个页面
+    @State var targetPage: String = ""
+
+    // 获取发送按钮文案
     func getSendButtonText(): String {
         if (this.sending) {
             return "发送中..."
@@ -25,11 +29,20 @@ class LoginPage {
         return "发送验证码"
     }
 
+    // 获取验证按钮文案
     func getVerifyButtonText(): String {
         if (this.verifying) {
-            return "登录中..."
+            return "验证中..."
         }
-        return "登录"
+        return "登录 / 注册"
+    }
+
+    // 获取跳转按钮文案
+    func getJumpButtonText(): String {
+        if (this.targetPage == "HomePage") {
+            return "进入主页"
+        }
+        return "去完善资料"
     }
 
     func build() {
@@ -39,37 +52,27 @@ class LoginPage {
                 .fontWeight(FontWeight.Bold)
                 .margin(bottom: 12)
 
-            Text("校园邮箱验证码登录")
-                .fontSize(14)
-                .fontColor(0xFF888888)
-                .margin(bottom: 40)
-
             if (this.step == "email") {
                 // ==================== 第一步：输入邮箱 ====================
-                TextInput(placeholder: "输入校园邮箱，例如：name@buaa.edu.cn")
+                TextInput(placeholder: "输入校园邮箱")
                     .width(80.percent)
                     .margin(bottom: 16)
-                    .onChange({ value: String =>
-                        this.email = value
+                    .onChange({ v: String =>
+                        this.email = v
                     })
 
                 Button(this.getSendButtonText())
                     .width(80.percent)
                     .enabled(!this.sending)
                     .onClick({ =>
-                        this.errorMsg = ""
                         if (this.email == "") {
-                            this.errorMsg = "请输入校园邮箱"
+                            this.errorMsg = "请输入邮箱"
                             return
                         }
-
                         this.sending = true
-
                         AuthService.sendCode(
                             this.email,
-                            { normalizedEmail: String =>
-                                this.email = normalizedEmail
-                                this.code = ""
+                            { _: String =>
                                 this.step = "code"
                                 this.sending = false
                             },
@@ -79,88 +82,72 @@ class LoginPage {
                             }
                         )
                     })
-            } else if (this.step == "success") {
-                // ==================== 第三步：验证成功，安全跳转区 ====================
-                Text("✓ 登录验证成功！")
-                    .fontSize(20)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor(0xFF00AA00) // 给个绿色的成功提示
-                    .margin(bottom: 32)
 
-                Button("进入完善资料页")
+            } else if (this.step == "jump") {
+                // ==================== 第三步：智能中转站 ====================
+                Text("验证成功！")
+                    .fontSize(20)
+                    .fontColor(0xFF00AA00)
+                    .margin(bottom: 20)
+
+                Button(this.getJumpButtonText())
                     .width(80.percent)
                     .onClick({ =>
-                        // 🌟 这里是纯正的 UI 主线程同步点击，绝对安全，不会再崩溃！
-                        Router.push(url: "ProfileSetupPage")
+                        try {
+                            // 🌟 这里是 UI 主线程，直接跳转
+                            Router.push(url: this.targetPage)
+                        } catch (e: Exception) {
+                            this.errorMsg = "跳转失败，请确保 main_pages.json 注册了 " + this.targetPage
+                        }
                     })
+
             } else {
-                // ==================== 第二步：输入验证码 ====================
+                // ==================== 第二步：验证并获取目的地 ====================
                 Text("验证码已发至 ${this.email}")
                     .fontSize(14)
-                    .fontColor(0xFF888888)
                     .margin(bottom: 16)
 
-                TextInput(placeholder: "输入6位验证码")
+                TextInput(placeholder: "输入验证码")
                     .width(80.percent)
                     .margin(bottom: 16)
-                    .onChange({ value: String =>
-                        this.code = value
+                    .onChange({ v: String =>
+                        this.code = v
                     })
 
                 Button(this.getVerifyButtonText())
                     .width(80.percent)
                     .enabled(!this.verifying)
-                    .margin(bottom: 12)
                     .onClick({ =>
-                        this.errorMsg = ""
                         if (this.code == "") {
                             this.errorMsg = "请输入验证码"
                             return
                         }
-
                         this.verifying = true
+                        this.errorMsg = ""
 
                         AuthService.verify(
                             this.email,
                             this.code,
                             { nextPage: String =>
-                                // 🌟 核心改动：异步回调里绝对不再执行 Router.push！
-                                // 我们只更新页面状态，UI 引擎会自动帮我们切到第三步的界面。
-                                this.step = "success"
+                                // 🌟 核心逻辑：后端会返回 "HomePage" 或 "ProfileSetupPage"
+                                if ( nextPage == "HomePage") {
+                                    this.targetPage = "HomePage"
+                                } else {
+                                    this.targetPage = "ProfileSetupPage"
+                                }
+                                this.step = "jump"
                                 this.verifying = false
                             },
                             { msg: String =>
                                 this.errorMsg = msg
                                 this.verifying = false
-                            }
-                        )
-                    })
-
-                Button("重新发送")
-                    .width(80.percent)
-                    .enabled(!this.sending)
-                    .onClick({ =>
-                        this.errorMsg = ""
-                        this.sending = true
-                        AuthService.sendCode(
-                            this.email,
-                            { normalizedEmail: String =>
-                                this.email = normalizedEmail
-                                this.code = ""
-                                this.sending = false
-                            },
-                            { msg: String =>
-                                this.errorMsg = msg
-                                this.sending = false
                             }
                         )
                     })
             }
 
-            // 全局错误提示区
             if (this.errorMsg != "") {
                 Text(this.errorMsg)
-                    .width(80.percent)
                     .fontColor(0xFFFF0000)
                     .margin(top: 16)
             }
