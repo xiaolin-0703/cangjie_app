@@ -3,7 +3,7 @@ package ohos_app_cangjie_entry.service
 import ohos.net.http.*
 import ohos.base.*
 import std.collection.HashMap
-import ohos_app_cangjie_entry.common.ApiConfig
+import ohos_app_cangjie_entry.common.*
 
 public class AuthService {
 
