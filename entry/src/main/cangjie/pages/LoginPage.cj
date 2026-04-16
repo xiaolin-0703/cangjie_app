@@ -1,59 +1,86 @@
 package ohos_app_cangjie_entry.pages
 
+internal import ohos.base.LengthProp
 import ohos.base.*
 import ohos.component.*
 import ohos.state_manage.*
 import ohos.state_macro_manage.*
-import ohos_app_cangjie_entry.service.AuthService// 引入时间模块以使用 Duration 和 sleep
-import std.time.*
-import std.sync.*
-
+import ohos.router.*
+import ohos_app_cangjie_entry.service.AuthService
 
 @Entry
 @Component
-class LoginPage { // 【修复】使用 struct 代替 class
+class LoginPage {
     @State var email: String = ""
     @State var code: String = ""
     @State var step: String = "email"
     @State var errorMsg: String = ""
-    @State var countdown: Int64 = 0
     @State var sending: Bool = false
+    @State var verifying: Bool = false
+
+    func getSendButtonText(): String {
+        if (this.sending) {
+            return "发送中..."
+        }
+        return "发送验证码"
+    }
+
+    func getVerifyButtonText(): String {
+        if (this.verifying) {
+            return "登录中..."
+        }
+        return "登录"
+    }
 
     func build() {
         Column {
-            Text("选课评价社区")
+            Text("学生兴趣圈子")
                 .fontSize(28)
                 .fontWeight(FontWeight.Bold)
-                .margin(bottom: 48)
+                .margin(bottom: 12)
+
+            Text("校园邮箱验证码登录")
+                .fontSize(14)
+                .fontColor(0xFF888888)
+                .margin(bottom: 40)
 
             if (this.step == "email") {
-                TextInput(placeholder: "输入校园邮箱")
+                // ==================== 第一步：输入邮箱 ====================
+                TextInput(placeholder: "输入校园邮箱，例如：name@buaa.edu.cn")
                     .width(80.percent)
                     .margin(bottom: 16)
-                    .onChange({ val: String => this.email = val }) // 建议显式声明参数类型
+                    .onChange({ value: String =>
+                        this.email = value
+                    })
 
-                // 【修复】使用 if-else 表达式代替三元运算符
-                Button(if (this.sending) { "发送中..." } else { "发送验证码" })
+                Button(this.getSendButtonText())
                     .width(80.percent)
                     .enabled(!this.sending)
-                    .onClick({  =>  // 【修复】onClick 需要显式忽略事件参数 _ =>
-                        this.sending = true
+                    .onClick({ =>
                         this.errorMsg = ""
+                        if (this.email == "") {
+                            this.errorMsg = "请输入校园邮箱"
+                            return
+                        }
+
+                        this.sending = true
+
                         AuthService.sendCode(
                             this.email,
-                            { => // 直接传闭包，删掉 onSuccess:
-                                this.step = "code"
+                            { normalizedEmail: String =>
+                                this.email = normalizedEmail
+                                this.code = ""
+                                this.step = "code" // 成功后切换到验证码视图
                                 this.sending = false
-                                this.startCountdown()
                             },
-                            { msg: String => // 直接传闭包，删掉 onError:
+                            { msg: String =>
                                 this.errorMsg = msg
                                 this.sending = false
                             }
                         )
                     })
-
             } else {
+                // ==================== 第二步：输入验证码 ====================
                 Text("验证码已发至 ${this.email}")
                     .fontSize(14)
                     .fontColor(0xFF888888)
@@ -62,42 +89,63 @@ class LoginPage { // 【修复】使用 struct 代替 class
                 TextInput(placeholder: "输入6位验证码")
                     .width(80.percent)
                     .margin(bottom: 16)
-                    .onChange({ val: String => this.code = val })
-
-                Button("登录 / 注册")
-                    .width(80.percent)
-                    .margin(bottom: 12)
-                    .onClick({  => // 【修复】显式忽略事件参数 _ =>
-                        this.errorMsg = ""
-                        AuthService.verify(
-                            this.email,
-                            this.code,
-                            { token => // 删掉 onSuccess:
-                                // TODO: 存 token，跳转主页
-                            },
-                            { msg: String => // 删掉 onError:
-                                this.errorMsg = msg
-                            }
-                        )
+                    .onChange({ value: String =>
+                        this.code = value
                     })
 
-                // 【修复】使用 if-else 表达式代替三元运算符
-                Button(if (this.countdown > 0) { "${this.countdown}秒后重发" } else { "重新发送" })
+                Button(this.getVerifyButtonText())
                     .width(80.percent)
-                    .enabled(this.countdown == 0)
+                    .enabled(!this.verifying)
+                    .margin(bottom: 12)
                     .onClick({ =>
+                        // 1. 清理错误状态并校验
+                        this.errorMsg = ""
+                        if (this.code == "") {
+                            this.errorMsg = "请输入验证码"
+                            return
+                        }
+
+                        // 2. 锁定按钮状态
+                        this.verifying = true
+
+                        // 3. 执行跳转（加上防卡死的 try-catch 保护）
+                        try {
+                            // 【核心修复】：和你的 index.cj 保持绝对一致，不要带 "pages/" 前缀！
+                            Router.push(url: "ProfileSetupPage")
+                        } catch (e: Exception) {
+                            // 如果真的跳转失败了，至少把错误信息打印在屏幕上，而不是静默卡死
+                            this.errorMsg = "跳转失败，请检查 main_pages.json"
+                        }
+
+                        // 4. 无论跳转成功还是失败，都必须释放按钮锁定状态
+                        this.verifying = false
+                    })
+
+                Button("重新发送")
+                    .width(80.percent)
+                    .enabled(!this.sending)
+                    .onClick({ =>
+                        this.errorMsg = ""
                         this.sending = true
-                        this.errorMsg = ""// 【修复】显式忽略事件参数 _ =>
                         AuthService.sendCode(
                             this.email,
-                            { => this.startCountdown() }, // 删掉 onSuccess:
-                            { _ => }                      // 删掉 onError:
+                            { normalizedEmail: String =>
+                                this.email = normalizedEmail
+                                this.code = ""
+                                this.sending = false
+                            },
+                            { msg: String =>
+                                this.errorMsg = msg
+                                this.sending = false
+                            }
                         )
                     })
             }
 
+            // 全局错误提示区
             if (this.errorMsg != "") {
                 Text(this.errorMsg)
+                    .width(80.percent)
                     .fontColor(0xFFFF0000)
                     .margin(top: 16)
             }
@@ -105,16 +153,5 @@ class LoginPage { // 【修复】使用 struct 代替 class
         .width(100.percent)
         .height(100.percent)
         .justifyContent(FlexAlign.Center)
-    }
-
-    func startCountdown() {
-        this.countdown = 60
-        // 开启一个轻量级线程来处理倒计时
-        spawn {
-            while (this.countdown > 0) {
-                sleep(Duration.second) // 线程休眠 1 秒
-                this.countdown -= 1    // 更新 @State 变量，自动触发 UI 刷新
-            }
-        }
     }
 }
