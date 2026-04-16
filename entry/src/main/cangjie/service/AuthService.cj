@@ -25,7 +25,7 @@ public class AuthService {
             return
         }
 
-        //ApiConfig.setAccessToken(loginToken)
+        ApiConfig.setAccessToken(loginToken)
         if (nextPage == "") {
             onSuccess("profile")
         } else {
