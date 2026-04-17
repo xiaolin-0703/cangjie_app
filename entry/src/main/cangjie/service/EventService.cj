@@ -145,7 +145,7 @@ public class EventService {
         }, options: option)
     }
 
-   public static func extractEventField(raw: String, index: Int64, key: String): String {
+public static func extractEventField(raw: String, index: Int64, key: String): String {
     let listMarker = "\"events\":["
     if (!raw.contains(listMarker)) {
         return ""
@@ -158,6 +158,7 @@ public class EventService {
 
     let tail = listParts[1]
 
+    // 先按对象切开，每个对象都是从 id 后面开始的
     let objectParts = tail.split("\"id\":")
     if (objectParts.size < index + 2) {
         return ""
@@ -165,6 +166,16 @@ public class EventService {
 
     let objectRaw = objectParts[index + 1]
 
+    // 特别处理 id：因为 objectRaw 本身就是从 id 后面开始
+    if (key == "id") {
+        let commaParts = objectRaw.split(",")
+        if (commaParts.size < 1) {
+            return ""
+        }
+        return commaParts[0]
+    }
+
+    // 处理字符串字段："key":"value"
     let stringMarker = "\"${key}\":\""
     if (objectRaw.contains(stringMarker)) {
         let valueParts = objectRaw.split(stringMarker)
@@ -181,6 +192,7 @@ public class EventService {
         return finalParts[0]
     }
 
+    // 处理数字或 null："key":10 / "key":null
     let numberMarker = "\"${key}\":"
     if (objectRaw.contains(numberMarker)) {
         let valueParts = objectRaw.split(numberMarker)
@@ -194,9 +206,127 @@ public class EventService {
             return ""
         }
 
-        return commaParts[0]
+        let rawValue = commaParts[0]
+        if (rawValue == "null") {
+            return ""
+        }
+
+        return rawValue
     }
 
     return ""
+}
+
+   public static func registerEvent(
+    eventId: String,
+    onSuccess: (String) -> Unit,
+    onError: (String) -> Unit
+): Unit {
+    if (eventId == "") {
+        onError("活动 ID 不能为空")
+        return
+    }
+
+    let token = ApiConfig.getAccessToken()
+    if (token == "") {
+        onError("请先登录")
+        return
+    }
+
+    let httpRequest = createHttp()
+    let option = HttpRequestOptions(
+        method: RequestMethod.POST,
+        expectDataType: HttpDataType.STRING,
+        header: HashMap<String, String>([
+            ("Authorization", "Bearer ${token}")
+        ])
+    )
+
+    httpRequest.request("${ApiConfig.BASE_URL}/events/${eventId}/register", { err, resp =>
+        if (let Some(_) <- err) {
+            onError("网络请求失败，请检查后端地址和网络")
+            httpRequest.destroy()
+            return
+        }
+
+        if (let Some(r) <- resp) {
+            let raw = r.result.toString()
+            match (r.responseCode) {
+                case ResponseCode.OK =>
+                    onSuccess(raw)
+                case _ =>
+                    let msg = ApiConfig.extractJsonString(raw, "message")
+                    if (msg == "") {
+                        onError("报名失败")
+                    } else {
+                        onError(msg)
+                    }
+            }
+        } else {
+            onError("报名失败，请稍后重试")
+        }
+
+        httpRequest.destroy()
+    }, options: option)
+}
+
+static var currentEventId: String = ""
+static var currentEventTitle: String = ""
+static var currentEventTimeText: String = ""
+static var currentEventLocation: String = ""
+static var currentEventStatusText: String = ""
+static var currentEventDescription: String = ""
+static var currentEventCapacityText: String = ""
+static var currentEventDeadlineText: String = ""
+
+public static func setCurrentEventDetail(
+    eventId: String,
+    title: String,
+    timeText: String,
+    location: String,
+    statusText: String,
+    description: String,
+    capacityText: String,
+    deadlineText: String
+): Unit {
+    currentEventId = eventId
+    currentEventTitle = title
+    currentEventTimeText = timeText
+    currentEventLocation = location
+    currentEventStatusText = statusText
+    currentEventDescription = description
+    currentEventCapacityText = capacityText
+    currentEventDeadlineText = deadlineText
+}
+public static func getCurrentEventId(): String {
+    return currentEventId
+}
+
+public static func getCurrentEventTitle(): String {
+    return currentEventTitle
+}
+
+public static func getCurrentEventTimeText(): String {
+    return currentEventTimeText
+}
+
+public static func getCurrentEventLocation(): String {
+    return currentEventLocation
+}
+
+public static func getCurrentEventStatusText(): String {
+    return currentEventStatusText
+}
+
+public static func getCurrentEventDescription(): String {
+    return currentEventDescription
+}
+
+public static func getCurrentEventCapacityText(): String {
+    return currentEventCapacityText
+}
+
+public static func getCurrentEventDeadlineText(): String {
+    return currentEventDeadlineText
 }
 }
