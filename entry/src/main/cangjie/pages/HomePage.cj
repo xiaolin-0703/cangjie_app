@@ -13,6 +13,14 @@ import ohos_app_cangjie_entry.common.ApiConfig
 class HomePage {
     @State var welcomeName: String = "北航社区"
 
+    func goToCreateEventPage() {
+        Router.push(url: "CreateEventPage")
+    }
+
+    func goToEventsPage() {
+        Router.push(url: "EventsPage")
+    }
+
     func build() {
         Column {
             // 顶部欢迎区
@@ -113,6 +121,9 @@ class HomePage {
                             .backgroundColor(0xFFFFFFFF)
                             .fontColor(0xFFFF7A45)
                             .borderRadius(20)
+                            .onClick({ =>
+                                this.goToEventsPage()
+                            })
                     }
                     .width(100.percent)
                     .padding(18)
@@ -166,6 +177,17 @@ class HomePage {
                             Text("参加本周热门活动")
                                 .fontSize(12)
                                 .fontColor(0xFF777777)
+                                .margin(bottom: 10)
+
+                            Button("去看看")
+                                .width(100.percent)
+                                .height(34)
+                                .backgroundColor(0xFFFFF1EA)
+                                .fontColor(0xFFFF7A45)
+                                .borderRadius(16)
+                                .onClick({ =>
+                                    this.goToEventsPage()
+                                })
                         }
                         .layoutWeight(1)
                         .padding(14)
@@ -374,14 +396,30 @@ class HomePage {
                             .fontWeight(FontWeight.Bold)
                             .fontColor(0xFF222222)
 
-                        Text("全部活动")
-                            .fontSize(13)
+                        Button("全部活动")
+                            .height(32)
+                            .backgroundColor(0xFFFFF1EA)
                             .fontColor(0xFFFF7A45)
+                            .borderRadius(16)
+                            .onClick({ =>
+                                this.goToEventsPage()
+                            })
                     }
                     .width(100.percent)
                     .justifyContent(FlexAlign.SpaceBetween)
                     .alignItems(VerticalAlign.Center)
                     .margin(top: 14, bottom: 12)
+
+                    Button("发起活动")
+                        .width(100.percent)
+                        .height(42)
+                        .backgroundColor(0xFFFFF1EA)
+                        .fontColor(0xFFFF7A45)
+                        .borderRadius(14)
+                        .margin(bottom: 12)
+                        .onClick({ =>
+                            this.goToCreateEventPage()
+                        })
 
                     Column {
                         Row {

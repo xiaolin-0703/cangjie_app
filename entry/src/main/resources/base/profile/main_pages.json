@@ -3,6 +3,8 @@
     "pages/Index",
     "pages/LoginPage",
     "pages/HomePage",
-    "pages/ProfileSetupPage"
+    "pages/ProfileSetupPage",
+    "pages/CreatEventPage",
+    "pages/EventsPage"
   ]
 }
