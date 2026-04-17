@@ -129,8 +129,8 @@ class LoginPage {
                             this.email,
                             this.code,
                             { nextPage: String =>
-                                // 🌟 核心逻辑：后端会返回 "HomePage" 或 "ProfileSetupPage"
-                                if ( nextPage == "HomePage") {
+                                // 🌟 核心逻辑：后端会返回 "home" 或 "ProfileSetupPage"
+                                if ( nextPage == "home") {
                                     this.targetPage = "HomePage"
                                 } else {
                                     this.targetPage = "ProfileSetupPage"
