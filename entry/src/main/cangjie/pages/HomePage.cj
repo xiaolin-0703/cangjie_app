@@ -98,7 +98,16 @@ class HomePage {
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
             .backgroundColor(0xFFFFF3EE)
-
+            Button("个人中心")
+            .width(100.percent)
+            .height(46)
+            .backgroundColor(0xFFFFF1EA)
+            .fontColor(0xFFFF7A45)
+            .borderRadius(16)
+            .margin(top: 8)
+            .onClick({ =>
+                Router.push(url: "ProfilePage")
+            })
             // 主内容区
             Scroll {
                 Column {
