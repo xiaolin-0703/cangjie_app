@@ -188,6 +188,15 @@ class HomePage {
                                 .onClick({ =>
                                     this.goToEventsPage()
                                 })
+                            Button("我发起的活动")
+                            .width(100.percent)
+                            .height(42)
+                            .backgroundColor(0xFFFFF1EA)
+                            .fontColor(0xFFFF7A45)
+                            .borderRadius(14)
+                            .onClick({ =>
+                                Router.push(url: "MyCreatedEventsPage")
+                            })
                         }
                         .layoutWeight(1)
                         .padding(14)

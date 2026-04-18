@@ -10,7 +10,7 @@ import ohos_app_cangjie_entry.service.EventService
 
 @Entry
 @Component
-class EventsPage {
+class MyCreatedEventsPage {
     @State var loading: Bool = false
     @State var firstLoaded: Bool = false
     @State var errorMsg: String = ""
@@ -23,6 +23,7 @@ class EventsPage {
     @State var event1Description: String = ""
     @State var event1CapacityText: String = ""
     @State var event1DeadlineText: String = ""
+    @State var event1RegisteredText: String = ""
 
     @State var event2Id: String = ""
     @State var event2Title: String = ""
@@ -32,6 +33,7 @@ class EventsPage {
     @State var event2Description: String = ""
     @State var event2CapacityText: String = ""
     @State var event2DeadlineText: String = ""
+    @State var event2RegisteredText: String = ""
 
     @State var event3Id: String = ""
     @State var event3Title: String = ""
@@ -41,14 +43,11 @@ class EventsPage {
     @State var event3Description: String = ""
     @State var event3CapacityText: String = ""
     @State var event3DeadlineText: String = ""
-
-    @State var event1RegisteredText: String = ""
-@State var event2RegisteredText: String = ""
-@State var event3RegisteredText: String = ""
+    @State var event3RegisteredText: String = ""
 
     public func aboutToAppear(): Unit {
         if (!this.firstLoaded && !this.loading) {
-            this.loadEvents()
+            this.loadCreatedEvents()
         }
     }
 
@@ -56,7 +55,7 @@ class EventsPage {
         if (this.loading) {
             return "刷新中..."
         }
-        return "刷新活动"
+        return "刷新列表"
     }
 
     func hasAnyEvent(): Bool {
@@ -72,6 +71,7 @@ class EventsPage {
         this.event1Description = ""
         this.event1CapacityText = ""
         this.event1DeadlineText = ""
+        this.event1RegisteredText = ""
 
         this.event2Id = ""
         this.event2Title = ""
@@ -81,6 +81,7 @@ class EventsPage {
         this.event2Description = ""
         this.event2CapacityText = ""
         this.event2DeadlineText = ""
+        this.event2RegisteredText = ""
 
         this.event3Id = ""
         this.event3Title = ""
@@ -90,8 +91,6 @@ class EventsPage {
         this.event3Description = ""
         this.event3CapacityText = ""
         this.event3DeadlineText = ""
-        this.event1RegisteredText = ""
-        this.event2RegisteredText = ""
         this.event3RegisteredText = ""
     }
 
@@ -106,7 +105,7 @@ class EventsPage {
             return "已取消"
         }
         if (status == "") {
-            return "正在报名中"
+            return "状态待定"
         }
         return status
     }
@@ -125,11 +124,16 @@ class EventsPage {
         return raw
     }
 
+    func formatRegisteredText(raw: String): String {
+        if (raw == "") {
+            return "已报名 0 人"
+        }
+        return "已报名 ${raw} 人"
+    }
+
     func fillEvents(raw: String) {
         this.clearEvents()
-    this.event1RegisteredText = "已报名 " + EventService.extractEventField(raw, 0, "registeredCount") + " 人"
-    this.event2RegisteredText = "已报名 " + EventService.extractEventField(raw, 1, "registeredCount") + " 人"
-    this.event3RegisteredText = "已报名 " + EventService.extractEventField(raw, 2, "registeredCount") + " 人"
+
         this.event1Id = EventService.extractEventField(raw, 0, "id")
         this.event1Title = EventService.extractEventField(raw, 0, "title")
         this.event1Time = EventService.extractEventField(raw, 0, "startTimeText")
@@ -143,6 +147,9 @@ class EventsPage {
         )
         this.event1DeadlineText = this.formatDeadlineText(
             EventService.extractEventField(raw, 0, "signupDeadline")
+        )
+        this.event1RegisteredText = this.formatRegisteredText(
+            EventService.extractEventField(raw, 0, "registeredCount")
         )
 
         this.event2Id = EventService.extractEventField(raw, 1, "id")
@@ -159,6 +166,9 @@ class EventsPage {
         this.event2DeadlineText = this.formatDeadlineText(
             EventService.extractEventField(raw, 1, "signupDeadline")
         )
+        this.event2RegisteredText = this.formatRegisteredText(
+            EventService.extractEventField(raw, 1, "registeredCount")
+        )
 
         this.event3Id = EventService.extractEventField(raw, 2, "id")
         this.event3Title = EventService.extractEventField(raw, 2, "title")
@@ -174,16 +184,18 @@ class EventsPage {
         this.event3DeadlineText = this.formatDeadlineText(
             EventService.extractEventField(raw, 2, "signupDeadline")
         )
+        this.event3RegisteredText = this.formatRegisteredText(
+            EventService.extractEventField(raw, 2, "registeredCount")
+        )
     }
 
-    func loadEvents() {
+    func loadCreatedEvents() {
         this.loading = true
         this.errorMsg = ""
 
-        EventService.getFeaturedEvents(
+        EventService.getCreatedByMeEvents(
             { raw: String =>
                 print(raw)
-                print("event1Id after parse = " + EventService.extractEventField(raw, 0, "id"))
                 this.fillEvents(raw)
                 this.loading = false
                 this.firstLoaded = true
@@ -196,24 +208,48 @@ class EventsPage {
         )
     }
 
+    func goToDetail(
+        eventId: String,
+        title: String,
+        timeText: String,
+        location: String,
+        statusText: String,
+        description: String,
+        capacityText: String,
+        deadlineText: String
+    ) {
+        EventService.setCurrentEventDetail(
+            eventId,
+            title,
+            timeText,
+            location,
+            statusText,
+            description,
+            capacityText,
+            deadlineText
+        )
+        Router.push(url: "EventDetailPage")
+    }
+
     func build() {
         Column {
+            // 顶部区域
             Column {
                 Row {
                     Column {
-                        Text("活动广场")
+                        Text("我发起的活动")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
                             .fontColor(0xFF222222)
                             .margin(bottom: 6)
 
-                        Text("查看最新发布的活动，找到你感兴趣的局")
+                        Text("查看你创建的活动，以及当前报名人数")
                             .fontSize(14)
                             .fontColor(0xFF666666)
                     }
                     .layoutWeight(1)
 
-                    Text("广场")
+                    Text("我的")
                         .fontSize(13)
                         .fontColor(0xFFFF7A45)
                         .backgroundColor(0xFFFFFFFF)
@@ -254,7 +290,7 @@ class EventsPage {
             Scroll {
                 Column {
                     Row {
-                        Text("最新活动")
+                        Text("我的活动")
                             .fontSize(20)
                             .fontWeight(FontWeight.Bold)
                             .fontColor(0xFF222222)
@@ -266,7 +302,7 @@ class EventsPage {
                             .borderRadius(16)
                             .enabled(!this.loading)
                             .onClick({ =>
-                                this.loadEvents()
+                                this.loadCreatedEvents()
                             })
                     }
                     .width(100.percent)
@@ -301,7 +337,7 @@ class EventsPage {
                                 .fontColor(0xFF222222)
                                 .margin(bottom: 10)
 
-                            Text("稍等一下，活动列表马上就来。")
+                            Text("稍等一下，你创建的活动马上就来。")
                                 .fontSize(13)
                                 .fontColor(0xFF777777)
                         }
@@ -312,13 +348,13 @@ class EventsPage {
                         .margin(bottom: 12)
                     } else if (!this.hasAnyEvent()) {
                         Column {
-                            Text("暂时还没有活动")
+                            Text("你还没有创建活动")
                                 .fontSize(20)
                                 .fontWeight(FontWeight.Bold)
                                 .fontColor(0xFF222222)
                                 .margin(bottom: 10)
 
-                            Text("你可以先发起一个活动，创建成功后它会显示在这里。")
+                            Text("去发起你的第一个活动吧。")
                                 .fontSize(13)
                                 .fontColor(0xFF777777)
                                 .margin(bottom: 16)
@@ -360,7 +396,7 @@ class EventsPage {
                                     }
                                     .layoutWeight(1)
 
-                                    Text("活动")
+                                    Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
                                         .backgroundColor(0xFFFF7A45)
@@ -375,9 +411,9 @@ class EventsPage {
                                     .fontColor(0xFFFF7A45)
                                     .margin(bottom: 6)
 
-                                    Text(this.event1RegisteredText)
-                                     .fontSize(12)
-                                     .fontColor(0xFF777777)
+                                Text(this.event1RegisteredText)
+                                    .fontSize(12)
+                                    .fontColor(0xFF777777)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
@@ -387,8 +423,7 @@ class EventsPage {
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
-                                        print("event1Id before detail = " + this.event1Id)
-                                        EventService.setCurrentEventDetail(
+                                        this.goToDetail(
                                             this.event1Id,
                                             this.event1Title,
                                             this.event1Time,
@@ -398,7 +433,6 @@ class EventsPage {
                                             this.event1CapacityText,
                                             this.event1DeadlineText
                                         )
-                                        Router.push(url: "EventDetailPage")
                                     })
                             }
                             .width(100.percent)
@@ -429,7 +463,7 @@ class EventsPage {
                                     }
                                     .layoutWeight(1)
 
-                                    Text("活动")
+                                    Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
                                         .backgroundColor(0xFFFF7A45)
@@ -444,9 +478,9 @@ class EventsPage {
                                     .fontColor(0xFFFF7A45)
                                     .margin(bottom: 6)
 
-                                    Text(this.event2RegisteredText)
-                                     .fontSize(12)
-                                     .fontColor(0xFF777777)
+                                Text(this.event2RegisteredText)
+                                    .fontSize(12)
+                                    .fontColor(0xFF777777)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
@@ -456,7 +490,7 @@ class EventsPage {
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
-                                        EventService.setCurrentEventDetail(
+                                        this.goToDetail(
                                             this.event2Id,
                                             this.event2Title,
                                             this.event2Time,
@@ -466,7 +500,6 @@ class EventsPage {
                                             this.event2CapacityText,
                                             this.event2DeadlineText
                                         )
-                                        Router.push(url: "EventDetailPage")
                                     })
                             }
                             .width(100.percent)
@@ -497,7 +530,7 @@ class EventsPage {
                                     }
                                     .layoutWeight(1)
 
-                                    Text("活动")
+                                    Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
                                         .backgroundColor(0xFFFF7A45)
@@ -507,14 +540,14 @@ class EventsPage {
                                 .width(100.percent)
                                 .margin(bottom: 10)
 
-                               Text(this.event3Status)
+                                Text(this.event3Status)
                                     .fontSize(12)
                                     .fontColor(0xFFFF7A45)
                                     .margin(bottom: 6)
 
-                                    Text(this.event3RegisteredText)
-                                     .fontSize(12)
-                                     .fontColor(0xFF777777)
+                                Text(this.event3RegisteredText)
+                                    .fontSize(12)
+                                    .fontColor(0xFF777777)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
@@ -524,7 +557,7 @@ class EventsPage {
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
-                                        EventService.setCurrentEventDetail(
+                                        this.goToDetail(
                                             this.event3Id,
                                             this.event3Title,
                                             this.event3Time,
@@ -534,7 +567,6 @@ class EventsPage {
                                             this.event3CapacityText,
                                             this.event3DeadlineText
                                         )
-                                        Router.push(url: "EventDetailPage")
                                     })
                             }
                             .width(100.percent)
