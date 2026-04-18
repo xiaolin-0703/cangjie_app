@@ -5,6 +5,9 @@
     "pages/HomePage",
     "pages/ProfileSetupPage",
     "pages/CreatEventPage",
-    "pages/EventsPage"
+    "pages/EventsPage",
+    "pages/MyCreatedEventsPage",
+    "pages/EventDetailPage"
+    "pages/RegistrationListPage"
   ]
 }

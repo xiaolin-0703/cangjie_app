@@ -214,6 +214,16 @@ class EventDetailPage {
                     .backgroundColor(0xFFFFFFFF)
                     .borderRadius(18)
                     .margin(bottom: 12)
+                    Button("查看报名名单")
+    .width(100.percent)
+    .height(42)
+    .backgroundColor(0xFFFFF1EA)
+    .fontColor(0xFFFF7A45)
+    .borderRadius(14)
+    .margin(top: 12)
+    .onClick({ =>
+        Router.push(url: "RegistrationListPage")
+    })
 
                     if (this.registerSuccess) {
                         Column {
