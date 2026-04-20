@@ -9,6 +9,10 @@
     "pages/MyCreatedEventsPage",
     "pages/EventDetailPage",
     "pages/RegistrationListPage",
-    "pages/ProfilePage"
+    "pages/ProfilePage",
+    "pages/CirclesPage",
+    "pages/CircleDetailPage",
+    "pages/CreatePostPage",
+    "pages/CreateCirclePage"
   ]
 }
