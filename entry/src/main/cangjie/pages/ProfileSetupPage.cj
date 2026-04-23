@@ -7,6 +7,7 @@ import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
 import ohos_app_cangjie_entry.service.UserService
+import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -15,9 +16,11 @@ class ProfileSetupPage {
     @State var grade: String = ""
     @State var department: String = ""
     @State var avatarUrl: String = ""
+    @State var avatarPreviewUri: String = ""
     @State var mode: String = "real"
     @State var errorMsg: String = ""
     @State var saving: Bool = false
+    @State var uploadingAvatar: Bool = false
 
     // 🌟 新增：控制页面是否展示“成功状态”的标志位
     @State var isSuccess: Bool = false
@@ -64,6 +67,33 @@ class ProfileSetupPage {
             return "保存中..."
         }
         return "保存并继续"
+    }
+
+    func getAvatarButtonText(): String {
+        if (this.uploadingAvatar) {
+            return "头像上传中..."
+        }
+        return "从相册选择头像"
+    }
+
+    func chooseAvatar() {
+        this.errorMsg = ""
+        this.uploadingAvatar = true
+        ImageUploadService.pickAndUploadImage(
+            { localUri: String =>
+                this.avatarPreviewUri = localUri
+            },
+            { imageUrl: String =>
+                this.avatarUrl = imageUrl
+                this.avatarPreviewUri = imageUrl
+                this.uploadingAvatar = false
+            },
+            { msg: String =>
+                this.errorMsg = msg
+                this.avatarPreviewUri = this.avatarUrl
+                this.uploadingAvatar = false
+            }
+        )
     }
 
     func build() {
@@ -126,12 +156,27 @@ class ProfileSetupPage {
                         this.department = val
                     })
 
-                TextInput(placeholder: "头像 URL（可选）")
+                Button(this.getAvatarButtonText())
                     .width(85.percent)
-                    .margin(bottom: 24)
-                    .onChange({ val: String =>
-                        this.avatarUrl = val
+                    .enabled(!this.uploadingAvatar)
+                    .margin(bottom: 12)
+                    .onClick({ =>
+                        this.chooseAvatar()
                     })
+
+                if (this.avatarPreviewUri != "") {
+                    Image(this.avatarPreviewUri)
+                        .width(84)
+                        .height(84)
+                        .borderRadius(42)
+                        .margin(bottom: 24)
+                } else {
+                    Text("未设置头像")
+                        .width(85.percent)
+                        .fontSize(13)
+                        .fontColor(0xFF888888)
+                        .margin(bottom: 24)
+                }
 
                 Text("默认身份模式")
                     .width(85.percent)
@@ -170,7 +215,7 @@ class ProfileSetupPage {
 
                 Button(this.getSaveButtonText())
                     .width(85.percent)
-                    .enabled(!this.saving)
+                    .enabled(!this.saving && !this.uploadingAvatar)
                     .onClick({ =>
                         this.errorMsg = ""
                         if (!this.validate()) {

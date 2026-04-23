@@ -1,3 +1,4 @@
+
 package ohos_app_cangjie_entry.pages
 
 internal import ohos.base.LengthProp
@@ -55,7 +56,14 @@ class CirclesPage {
         if (this.loading) {
             return "刷新中..."
         }
-        return "刷新圈子"
+        return "刷新"
+    }
+
+    func getJoinButtonText(joined: String): String {
+        if (joined == "true") {
+            return "已加入"
+        }
+        return "+ 加入"
     }
 
     func clearCircles() {
@@ -96,6 +104,22 @@ class CirclesPage {
             this.circle3Name != "" ||
             this.circle4Name != "" ||
             this.circle5Name != ""
+    }
+
+    func hasJoinedCircle(): Bool {
+        return (this.circle1Name != "" && this.circle1Joined == "true") ||
+            (this.circle2Name != "" && this.circle2Joined == "true") ||
+            (this.circle3Name != "" && this.circle3Joined == "true") ||
+            (this.circle4Name != "" && this.circle4Joined == "true") ||
+            (this.circle5Name != "" && this.circle5Joined == "true")
+    }
+
+    func hasDiscoverCircle(): Bool {
+        return (this.circle1Name != "" && this.circle1Joined != "true") ||
+            (this.circle2Name != "" && this.circle2Joined != "true") ||
+            (this.circle3Name != "" && this.circle3Joined != "true") ||
+            (this.circle4Name != "" && this.circle4Joined != "true") ||
+            (this.circle5Name != "" && this.circle5Joined != "true")
     }
 
     func fillCircles(raw: String) {
@@ -204,92 +228,45 @@ class CirclesPage {
         Router.push(url: "CircleDetailPage")
     }
 
+
+
+    func goToHomePage() {
+        Router.push(url: "HomePage")
+    }
+
+    func goToEventsPage() {
+        Router.push(url: "EventsPage")
+    }
+
+    func goToProfilePage() {
+        Router.push(url: "ProfilePage")
+    }
+
+    func goToCreateCirclePage() {
+        Router.push(url: "CreateCirclePage")
+    }
+
     func build() {
         Column {
-            Column {
-                Row {
-                    Column {
-                        Text("逛圈子")
-                            .fontSize(28)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
-                            .margin(bottom: 6)
-
-                        Text("发现感兴趣的组织，加入你的校园同好圈")
-                            .fontSize(14)
-                            .fontColor(0xFF666666)
-                    }
-                    .layoutWeight(1)
-
-                    Text("圈子")
-                        .fontSize(13)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFFFFF)
-                        .padding(left: 14, right: 14, top: 8, bottom: 8)
-                        .borderRadius(18)
-                }
-                .width(100.percent)
-                .margin(bottom: 16)
-
-                Row {
-                    Button("返回首页")
-                        .layoutWeight(1)
-                        .height(40)
-                        .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
-                        .borderRadius(20)
-                        .margin(right: 8)
-                        .onClick({ _: ClickEvent =>
-                            Router.push(url: "HomePage")
-                        })
-
-                    Button("新建圈子")
-                        .layoutWeight(1)
-                        .height(40)
-                        .backgroundColor(0xFFFF7A45)
-                        .fontColor(0xFFFFFFFF)
-                        .borderRadius(20)
-                        .margin(right: 8)
-                        .onClick({ _: ClickEvent =>
-                            Router.push(url: "CreateCirclePage")
-                        })
-
-                    Button(this.getRefreshButtonText())
-                        .layoutWeight(1)
-                        .height(40)
-                        .backgroundColor(0xFFFFF1EA)
-                        .fontColor(0xFFFF7A45)
-                        .borderRadius(20)
-                        .enabled(!this.loading)
-                        .onClick({ _: ClickEvent =>
-                            this.loadCircles()
-                        })
-                }
-                .width(100.percent)
-            }
-            .width(100.percent)
-            .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
-
             Scroll {
                 Column {
                     if (this.errorMsg != "") {
                         Column {
                             Text("加载失败")
-                                .fontSize(18)
+                                .fontSize(17)
                                 .fontWeight(FontWeight.Bold)
                                 .fontColor(0xFF222222)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE24D4D)
                         }
                         .width(100.percent)
                         .padding(16)
                         .backgroundColor(0xFFFFFFFF)
                         .borderRadius(18)
-                        .margin(bottom: 12)
+                        .margin(bottom: 14)
                     }
 
                     if (!this.firstLoaded && this.loading) {
@@ -297,73 +274,119 @@ class CirclesPage {
                             Text("正在加载圈子...")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 10)
+                                .fontColor(0xFF1E2B45)
+                                .margin(bottom: 8)
 
                             Text("稍等一下，圈子列表马上就来。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7B879A)
                         }
                         .width(100.percent)
                         .padding(18)
                         .backgroundColor(0xFFFFFFFF)
                         .borderRadius(18)
-                        .margin(bottom: 12)
-                    } else if (!this.hasAnyCircle()) {
+                        .margin(bottom: 14)
+                    }
+
+                    Row {
+                        Text("我的圈子")
+                            .fontSize(24)
+                            .fontWeight(FontWeight.Bold)
+                            .fontColor(0xFF1E2B45)
+                            .layoutWeight(1)
+
+                        Text("创建圈子")
+                            .fontSize(13)
+                            .fontColor(0xFF2F80FF)
+                            .onClick({ _: ClickEvent =>
+                                Router.push(url: "CreateCirclePage")
+                            })
+                    }
+                    .width(100.percent)
+                    .margin(bottom: 12)
+                    .alignItems(VerticalAlign.Center)
+
+                    if (!this.hasJoinedCircle()) {
                         Column {
-                            Text("暂时还没有圈子")
-                                .fontSize(20)
+                            Text("你还没有加入圈子")
+                                .fontSize(17)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 10)
+                                .fontColor(0xFF1E2B45)
+                                .margin(bottom: 8)
 
-                            Text("等管理员或用户创建圈子后，这里会显示真实圈子。")
+                            Text("可以先创建一个新圈子，或者去下面发现感兴趣的圈子。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
-                                .margin(bottom: 16)
+                                .fontColor(0xFF7B879A)
+                                .margin(bottom: 14)
 
-                            Button("去创建圈子")
-                                .width(100.percent)
-                                .height(42)
-                                .backgroundColor(0xFFFF7A45)
-                                .fontColor(0xFFFFFFFF)
-                                .borderRadius(14)
-                                .onClick({ _: ClickEvent =>
-                                    Router.push(url: "CreateCirclePage")
-                                })
+                            Row {
+                                Text("+ 创建圈子")
+                                    .fontSize(13)
+                                    .fontWeight(FontWeight.Bold)
+                                    .fontColor(0xFFFFFFFF)
+                                    .backgroundColor(0xFF2F80FF)
+                                    .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                    .borderRadius(16)
+                                    .margin(right: 10)
+                                    .onClick({ _: ClickEvent =>
+                                        Router.push(url: "CreateCirclePage")
+                                    })
+
+                                Text("去发现")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                    .borderRadius(16)
+                            }
+                            .width(100.percent)
                         }
                         .width(100.percent)
-                        .padding(18)
+                        .padding(16)
                         .backgroundColor(0xFFFFFFFF)
                         .borderRadius(18)
-                        .margin(bottom: 12)
+                        .margin(bottom: 22)
                     } else {
-                        if (this.circle1Name != "") {
+                        if (this.circle1Name != "" && this.circle1Joined == "true") {
                             Column {
-                                Text(this.circle1Name)
-                                    .fontSize(20)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
-
-                                Text(this.circle1MemberText)
-                                    .fontSize(13)
-                                    .fontColor(0xFFFF7A45)
-                                    .margin(bottom: 8)
-
-                                Text(this.circle1Desc)
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 14)
-
                                 Row {
-                                    Button("查看圈子")
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .backgroundColor(0xFFFFF1EA)
-                                        .fontColor(0xFFFF7A45)
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(54)
+                                        .height(54)
+                                        .backgroundColor(0xFF7FAEFF)
                                         .borderRadius(14)
-                                        .margin(right: 8)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle1Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle1MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text("进入")
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 12, right: 12, top: 8, bottom: 8)
+                                        .borderRadius(14)
                                         .onClick({ _: ClickEvent =>
                                             this.openCircleDetail(
                                                 this.circle1Id,
@@ -373,19 +396,14 @@ class CirclesPage {
                                                 this.circle1Joined
                                             )
                                         })
-
-                                    Button(CircleService.formatJoinButtonText(this.circle1Joined))
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .enabled(this.circle1Joined != "true")
-                                        .backgroundColor(0xFFFF7A45)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ _: ClickEvent =>
-                                            this.joinCircle(this.circle1Id, 1)
-                                        })
                                 }
                                 .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle1Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -394,32 +412,46 @@ class CirclesPage {
                             .margin(bottom: 12)
                         }
 
-                        if (this.circle2Name != "") {
+                        if (this.circle2Name != "" && this.circle2Joined == "true") {
                             Column {
-                                Text(this.circle2Name)
-                                    .fontSize(20)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
-
-                                Text(this.circle2MemberText)
-                                    .fontSize(13)
-                                    .fontColor(0xFFFF7A45)
-                                    .margin(bottom: 8)
-
-                                Text(this.circle2Desc)
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 14)
-
                                 Row {
-                                    Button("查看圈子")
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .backgroundColor(0xFFFFF1EA)
-                                        .fontColor(0xFFFF7A45)
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(54)
+                                        .height(54)
+                                        .backgroundColor(0xFFFFB36A)
                                         .borderRadius(14)
-                                        .margin(right: 8)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle2Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle2MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text("进入")
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 12, right: 12, top: 8, bottom: 8)
+                                        .borderRadius(14)
                                         .onClick({ _: ClickEvent =>
                                             this.openCircleDetail(
                                                 this.circle2Id,
@@ -429,19 +461,14 @@ class CirclesPage {
                                                 this.circle2Joined
                                             )
                                         })
-
-                                    Button(CircleService.formatJoinButtonText(this.circle2Joined))
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .enabled(this.circle2Joined != "true")
-                                        .backgroundColor(0xFFFF7A45)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ _: ClickEvent =>
-                                            this.joinCircle(this.circle2Id, 2)
-                                        })
                                 }
                                 .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle2Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -450,32 +477,46 @@ class CirclesPage {
                             .margin(bottom: 12)
                         }
 
-                        if (this.circle3Name != "") {
+                        if (this.circle3Name != "" && this.circle3Joined == "true") {
                             Column {
-                                Text(this.circle3Name)
-                                    .fontSize(20)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
-
-                                Text(this.circle3MemberText)
-                                    .fontSize(13)
-                                    .fontColor(0xFFFF7A45)
-                                    .margin(bottom: 8)
-
-                                Text(this.circle3Desc)
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 14)
-
                                 Row {
-                                    Button("查看圈子")
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .backgroundColor(0xFFFFF1EA)
-                                        .fontColor(0xFFFF7A45)
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(54)
+                                        .height(54)
+                                        .backgroundColor(0xFF78C58B)
                                         .borderRadius(14)
-                                        .margin(right: 8)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle3Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle3MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text("进入")
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 12, right: 12, top: 8, bottom: 8)
+                                        .borderRadius(14)
                                         .onClick({ _: ClickEvent =>
                                             this.openCircleDetail(
                                                 this.circle3Id,
@@ -485,19 +526,14 @@ class CirclesPage {
                                                 this.circle3Joined
                                             )
                                         })
-
-                                    Button(CircleService.formatJoinButtonText(this.circle3Joined))
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .enabled(this.circle3Joined != "true")
-                                        .backgroundColor(0xFFFF7A45)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ _: ClickEvent =>
-                                            this.joinCircle(this.circle3Id, 3)
-                                        })
                                 }
                                 .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle3Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -506,32 +542,46 @@ class CirclesPage {
                             .margin(bottom: 12)
                         }
 
-                        if (this.circle4Name != "") {
+                        if (this.circle4Name != "" && this.circle4Joined == "true") {
                             Column {
-                                Text(this.circle4Name)
-                                    .fontSize(20)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
-
-                                Text(this.circle4MemberText)
-                                    .fontSize(13)
-                                    .fontColor(0xFFFF7A45)
-                                    .margin(bottom: 8)
-
-                                Text(this.circle4Desc)
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 14)
-
                                 Row {
-                                    Button("查看圈子")
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .backgroundColor(0xFFFFF1EA)
-                                        .fontColor(0xFFFF7A45)
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(54)
+                                        .height(54)
+                                        .backgroundColor(0xFFBE92FF)
                                         .borderRadius(14)
-                                        .margin(right: 8)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle4Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle4MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text("进入")
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 12, right: 12, top: 8, bottom: 8)
+                                        .borderRadius(14)
                                         .onClick({ _: ClickEvent =>
                                             this.openCircleDetail(
                                                 this.circle4Id,
@@ -541,19 +591,14 @@ class CirclesPage {
                                                 this.circle4Joined
                                             )
                                         })
-
-                                    Button(CircleService.formatJoinButtonText(this.circle4Joined))
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .enabled(this.circle4Joined != "true")
-                                        .backgroundColor(0xFFFF7A45)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ _: ClickEvent =>
-                                            this.joinCircle(this.circle4Id, 4)
-                                        })
                                 }
                                 .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle4Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -562,32 +607,46 @@ class CirclesPage {
                             .margin(bottom: 12)
                         }
 
-                        if (this.circle5Name != "") {
+                        if (this.circle5Name != "" && this.circle5Joined == "true") {
                             Column {
-                                Text(this.circle5Name)
-                                    .fontSize(20)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
-
-                                Text(this.circle5MemberText)
-                                    .fontSize(13)
-                                    .fontColor(0xFFFF7A45)
-                                    .margin(bottom: 8)
-
-                                Text(this.circle5Desc)
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 14)
-
                                 Row {
-                                    Button("查看圈子")
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .backgroundColor(0xFFFFF1EA)
-                                        .fontColor(0xFFFF7A45)
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(54)
+                                        .height(54)
+                                        .backgroundColor(0xFF59B7C9)
                                         .borderRadius(14)
-                                        .margin(right: 8)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle5Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle5MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text("进入")
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 12, right: 12, top: 8, bottom: 8)
+                                        .borderRadius(14)
                                         .onClick({ _: ClickEvent =>
                                             this.openCircleDetail(
                                                 this.circle5Id,
@@ -597,19 +656,14 @@ class CirclesPage {
                                                 this.circle5Joined
                                             )
                                         })
-
-                                    Button(CircleService.formatJoinButtonText(this.circle5Joined))
-                                        .layoutWeight(1)
-                                        .height(42)
-                                        .enabled(this.circle5Joined != "true")
-                                        .backgroundColor(0xFFFF7A45)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ _: ClickEvent =>
-                                            this.joinCircle(this.circle5Id, 5)
-                                        })
                                 }
                                 .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle5Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -618,14 +672,647 @@ class CirclesPage {
                             .margin(bottom: 12)
                         }
                     }
+
+                    Row {
+                        Text("发现圈子")
+                            .fontSize(24)
+                            .fontWeight(FontWeight.Bold)
+                            .fontColor(0xFF1E2B45)
+                            .layoutWeight(1)
+
+                        Row {
+                            Text("⌕")
+                                .fontSize(16)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF2F80FF)
+                        }
+                        .width(34)
+                        .height(34)
+                        .backgroundColor(0xFFEAF2FF)
+                        .borderRadius(17)
+                        .justifyContent(FlexAlign.Center)
+                        .alignItems(VerticalAlign.Center)
+                    }
+                    .width(100.percent)
+                    .margin(top: 10, bottom: 12)
+                    .alignItems(VerticalAlign.Center)
+
+                    if (!this.hasAnyCircle()) {
+                        Column {
+                            Text("暂时还没有圈子")
+                                .fontSize(18)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF1E2B45)
+                                .margin(bottom: 8)
+
+                            Text("你可以先创建第一个圈子，后面这里会显示真实圈子。")
+                                .fontSize(13)
+                                .fontColor(0xFF7B879A)
+                                .margin(bottom: 14)
+
+                            Text("+ 创建圈子")
+                                .fontSize(14)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFFFFFFFF)
+                                .backgroundColor(0xFF2F80FF)
+                                .padding(left: 16, right: 16, top: 10, bottom: 10)
+                                .borderRadius(16)
+                                .onClick({ _: ClickEvent =>
+                                    Router.push(url: "CreateCirclePage")
+                                })
+                        }
+                        .width(100.percent)
+                        .padding(18)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(18)
+                        .margin(bottom: 18)
+                    } else if (!this.hasDiscoverCircle()) {
+                        Column {
+                            Text("当前可发现的圈子都已经加入了")
+                                .fontSize(17)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF1E2B45)
+                                .margin(bottom: 8)
+
+                            Text("可以创建新圈子，或者等待新的圈子出现。")
+                                .fontSize(13)
+                                .fontColor(0xFF7B879A)
+                        }
+                        .width(100.percent)
+                        .padding(18)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(18)
+                        .margin(bottom: 18)
+                    } else {
+                        if (this.circle1Name != "" && this.circle1Joined != "true") {
+                            Column {
+                                Row {
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(58)
+                                        .height(58)
+                                        .backgroundColor(0xFF7FAEFF)
+                                        .borderRadius(14)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle1Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle1MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text(this.getJoinButtonText(this.circle1Joined))
+                                        .fontSize(13)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                        .borderRadius(16)
+                                        .onClick({ _: ClickEvent =>
+                                            this.joinCircle(this.circle1Id, 1)
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle1Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
+                                    .margin(bottom: 12)
+
+                                Row {
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFDDEBFF)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFC9DEFF)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFB6D1FF)
+                                        .borderRadius(12)
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+
+                                Text("查看圈子详情 >")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .onClick({ _: ClickEvent =>
+                                        this.openCircleDetail(
+                                            this.circle1Id,
+                                            this.circle1Name,
+                                            this.circle1Desc,
+                                            this.circle1MemberText,
+                                            this.circle1Joined
+                                        )
+                                    })
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 14)
+                        }
+
+                        if (this.circle2Name != "" && this.circle2Joined != "true") {
+                            Column {
+                                Row {
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(58)
+                                        .height(58)
+                                        .backgroundColor(0xFFFFB36A)
+                                        .borderRadius(14)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle2Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle2MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text(this.getJoinButtonText(this.circle2Joined))
+                                        .fontSize(13)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                        .borderRadius(16)
+                                        .onClick({ _: ClickEvent =>
+                                            this.joinCircle(this.circle2Id, 2)
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle2Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
+                                    .margin(bottom: 12)
+
+                                Row {
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFFFF1D8)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFFFE3BE)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFFFD59F)
+                                        .borderRadius(12)
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+
+                                Text("查看圈子详情 >")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .onClick({ _: ClickEvent =>
+                                        this.openCircleDetail(
+                                            this.circle2Id,
+                                            this.circle2Name,
+                                            this.circle2Desc,
+                                            this.circle2MemberText,
+                                            this.circle2Joined
+                                        )
+                                    })
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 14)
+                        }
+
+                        if (this.circle3Name != "" && this.circle3Joined != "true") {
+                            Column {
+                                Row {
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(58)
+                                        .height(58)
+                                        .backgroundColor(0xFF78C58B)
+                                        .borderRadius(14)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle3Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle3MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text(this.getJoinButtonText(this.circle3Joined))
+                                        .fontSize(13)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                        .borderRadius(16)
+                                        .onClick({ _: ClickEvent =>
+                                            this.joinCircle(this.circle3Id, 3)
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle3Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
+                                    .margin(bottom: 12)
+
+                                Row {
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFDDF5E2)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFC7ECCE)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFB0E1BA)
+                                        .borderRadius(12)
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+
+                                Text("查看圈子详情 >")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .onClick({ _: ClickEvent =>
+                                        this.openCircleDetail(
+                                            this.circle3Id,
+                                            this.circle3Name,
+                                            this.circle3Desc,
+                                            this.circle3MemberText,
+                                            this.circle3Joined
+                                        )
+                                    })
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 14)
+                        }
+
+                        if (this.circle4Name != "" && this.circle4Joined != "true") {
+                            Column {
+                                Row {
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(58)
+                                        .height(58)
+                                        .backgroundColor(0xFFBE92FF)
+                                        .borderRadius(14)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle4Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle4MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text(this.getJoinButtonText(this.circle4Joined))
+                                        .fontSize(13)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                        .borderRadius(16)
+                                        .onClick({ _: ClickEvent =>
+                                            this.joinCircle(this.circle4Id, 4)
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle4Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
+                                    .margin(bottom: 12)
+
+                                Row {
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFF0E5FF)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFE3D2FF)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFD6BFFF)
+                                        .borderRadius(12)
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+
+                                Text("查看圈子详情 >")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .onClick({ _: ClickEvent =>
+                                        this.openCircleDetail(
+                                            this.circle4Id,
+                                            this.circle4Name,
+                                            this.circle4Desc,
+                                            this.circle4MemberText,
+                                            this.circle4Joined
+                                        )
+                                    })
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 14)
+                        }
+
+                        if (this.circle5Name != "" && this.circle5Joined != "true") {
+                            Column {
+                                Row {
+                                    Row {
+                                        Column {
+                                            Text("圈")
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFFFFFFFF)
+                                        }
+                                        .width(58)
+                                        .height(58)
+                                        .backgroundColor(0xFF59B7C9)
+                                        .borderRadius(14)
+                                        .justifyContent(FlexAlign.Center)
+                                        .alignItems(HorizontalAlign.Center)
+                                        .margin(right: 12)
+
+                                        Column {
+                                            Text(this.circle5Name)
+                                                .fontSize(18)
+                                                .fontWeight(FontWeight.Bold)
+                                                .fontColor(0xFF1E2B45)
+                                                .margin(bottom: 4)
+
+                                            Text(this.circle5MemberText)
+                                                .fontSize(12)
+                                                .fontColor(0xFF7B879A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .layoutWeight(1)
+
+                                    Text(this.getJoinButtonText(this.circle5Joined))
+                                        .fontSize(13)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF2F80FF)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .padding(left: 14, right: 14, top: 9, bottom: 9)
+                                        .borderRadius(16)
+                                        .onClick({ _: ClickEvent =>
+                                            this.joinCircle(this.circle5Id, 5)
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 10)
+                                .alignItems(VerticalAlign.Center)
+
+                                Text(this.circle5Desc)
+                                    .fontSize(13)
+                                    .fontColor(0xFF5A6A85)
+                                    .margin(bottom: 12)
+
+                                Row {
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFD7F2F7)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFC0EAF1)
+                                        .borderRadius(12)
+                                        .margin(right: 6)
+
+                                    Column { }
+                                        .layoutWeight(1)
+                                        .height(80)
+                                        .backgroundColor(0xFFA9E1EA)
+                                        .borderRadius(12)
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+
+                                Text("查看圈子详情 >")
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .onClick({ _: ClickEvent =>
+                                        this.openCircleDetail(
+                                            this.circle5Id,
+                                            this.circle5Name,
+                                            this.circle5Desc,
+                                            this.circle5MemberText,
+                                            this.circle5Joined
+                                        )
+                                    })
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 14)
+                        }
+                    }
                 }
                 .width(100.percent)
-                .padding(left: 16, right: 16, top: 16, bottom: 20)
+                .padding(left: 16, right: 16, top: 16, bottom: 96)
             }
             .layoutWeight(1)
+
+            Row {
+                Row {
+                    Text("广场")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToHomePage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Row {
+                    Text("圈子")
+                        .fontColor(0xFF2F80FF)
+                        .fontWeight(FontWeight.Bold)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Button("+")
+                    .width(52)
+                    .height(52)
+                    .backgroundColor(0xFF2F80FF)
+                    .fontColor(0xFFFFFFFF)
+                    .fontSize(28)
+                    .fontWeight(FontWeight.Bold)
+                    .borderRadius(26)
+                    .margin(left: 6, right: 6)
+                    .onClick({ _: ClickEvent =>
+                        this.goToCreateCirclePage()
+                    })
+
+                Row {
+                    Text("活动")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToEventsPage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Row {
+                    Text("我的")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToProfilePage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+            }
+            .alignItems(VerticalAlign.Center)
+            .width(100.percent)
+            .padding(left: 10, right: 10, top: 10, bottom: 16)
+            .backgroundColor(0xFFFFFFFF)
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF5F7FB)
     }
 }

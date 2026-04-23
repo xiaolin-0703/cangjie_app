@@ -7,6 +7,7 @@ import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
 import ohos_app_cangjie_entry.service.CircleService
+import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -16,8 +17,11 @@ class CreatePostPage {
 
     @State var title: String = ""
     @State var content: String = ""
+    @State var imageUrl: String = ""
+    @State var imagePreviewUri: String = ""
 
     @State var submitting: Bool = false
+    @State var uploadingImage: Bool = false
     @State var successMsg: String = ""
     @State var errorMsg: String = ""
 
@@ -31,6 +35,16 @@ class CreatePostPage {
             return "发布中..."
         }
         return "发布帖子"
+    }
+
+    func getImageButtonText(): String {
+        if (this.uploadingImage) {
+            return "图片上传中..."
+        }
+        if (this.imagePreviewUri != "") {
+            return "重新选择图片"
+        }
+        return "从相册选择图片"
     }
 
     func getCircleHintText(): String {
@@ -51,12 +65,38 @@ class CreatePostPage {
             return false
         }
 
-        if (this.content == "") {
-            this.errorMsg = "帖子内容不能为空"
+        if (this.content == "" && this.imageUrl == "") {
+            this.errorMsg = "帖子内容或图片至少填写一项"
+            return false
+        }
+
+        if (this.imagePreviewUri != "" && this.imageUrl == "") {
+            this.errorMsg = "图片还在上传或上传失败，请稍后重试"
             return false
         }
 
         return true
+    }
+
+    func choosePostImage() {
+        this.errorMsg = ""
+        this.successMsg = ""
+        this.uploadingImage = true
+        ImageUploadService.pickAndUploadImage(
+            { localUri: String =>
+                this.imagePreviewUri = localUri
+            },
+            { uploadedUrl: String =>
+                this.imageUrl = uploadedUrl
+                this.imagePreviewUri = uploadedUrl
+                this.uploadingImage = false
+            },
+            { msg: String =>
+                this.errorMsg = msg
+                this.imagePreviewUri = this.imageUrl
+                this.uploadingImage = false
+            }
+        )
     }
 
     func submitPost() {
@@ -73,11 +113,14 @@ class CreatePostPage {
             this.circleId,
             this.title,
             this.content,
+            this.imageUrl,
             { _: String =>
                 this.submitting = false
                 this.successMsg = "帖子发布成功"
                 this.title = ""
                 this.content = ""
+                this.imageUrl = ""
+                this.imagePreviewUri = ""
             },
             { msg: String =>
                 this.submitting = false
@@ -174,6 +217,31 @@ class CreatePostPage {
                                 this.content = v
                             })
 
+                        Text("帖子图片")
+                            .fontSize(14)
+                            .fontColor(0xFF777777)
+                            .margin(bottom: 8)
+
+                        Button(this.getImageButtonText())
+                            .width(100.percent)
+                            .height(44)
+                            .enabled(!this.uploadingImage && !this.submitting)
+                            .backgroundColor(0xFFFFF1EA)
+                            .fontColor(0xFFFF7A45)
+                            .borderRadius(16)
+                            .margin(bottom: 12)
+                            .onClick({ _: ClickEvent =>
+                                this.choosePostImage()
+                            })
+
+                        if (this.imagePreviewUri != "") {
+                            Image(this.imagePreviewUri)
+                                .width(100.percent)
+                                .height(180)
+                                .borderRadius(16)
+                                .margin(bottom: 16)
+                        }
+
                         if (this.errorMsg != "") {
                             Text(this.errorMsg)
                                 .fontSize(14)
@@ -191,7 +259,7 @@ class CreatePostPage {
                         Button(this.getSubmitButtonText())
                             .width(100.percent)
                             .height(44)
-                            .enabled(!this.submitting)
+                            .enabled(!this.submitting && !this.uploadingImage)
                             .backgroundColor(0xFFFF7A45)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(18)

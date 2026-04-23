@@ -6,38 +6,11 @@ import ohos.component.*
 import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
-import ohos_app_cangjie_entry.common.ApiConfig
-import ohos_app_cangjie_entry.service.CircleService
 
 @Entry
 @Component
 class HomePage {
-    @State var welcomeName: String = "北航社区"
-
-    @State var circleLoading: Bool = false
-    @State var circleFirstLoaded: Bool = false
-
-    @State var hotCircle1Id: String = ""
-    @State var hotCircle1Name: String = ""
-    @State var hotCircle1Desc: String = ""
-    @State var hotCircle1MemberText: String = ""
-    @State var hotCircle1Joined: String = "false"
-
-    @State var hotCircle2Id: String = ""
-    @State var hotCircle2Name: String = ""
-    @State var hotCircle2Desc: String = ""
-    @State var hotCircle2MemberText: String = ""
-    @State var hotCircle2Joined: String = "false"
-
-    public func aboutToAppear(): Unit {
-        if (!this.circleFirstLoaded && !this.circleLoading) {
-            this.loadHotCircles()
-        }
-    }
-
-    func goToCreateEventPage() {
-        Router.push(url: "CreateEventPage")
-    }
+    @State var currentTab: String = "recommend"
 
     func goToEventsPage() {
         Router.push(url: "EventsPage")
@@ -51,712 +24,973 @@ class HomePage {
         Router.push(url: "ProfilePage")
     }
 
-    func goToMyCreatedEventsPage() {
-        Router.push(url: "MyCreatedEventsPage")
-    }
-
-    func clearHotCircles() {
-        this.hotCircle1Id = ""
-        this.hotCircle1Name = ""
-        this.hotCircle1Desc = ""
-        this.hotCircle1MemberText = ""
-        this.hotCircle1Joined = "false"
-
-        this.hotCircle2Id = ""
-        this.hotCircle2Name = ""
-        this.hotCircle2Desc = ""
-        this.hotCircle2MemberText = ""
-        this.hotCircle2Joined = "false"
-    }
-
-    func hasHotCircles(): Bool {
-        return this.hotCircle1Name != "" || this.hotCircle2Name != ""
-    }
-
-    func loadHotCircles() {
-        this.circleLoading = true
-
-        CircleService.getHotCircles(
-            { raw: String =>
-                this.clearHotCircles()
-
-                this.hotCircle1Id = CircleService.extractCircleField(raw, 0, "id")
-                this.hotCircle1Name = CircleService.extractCircleField(raw, 0, "name")
-                this.hotCircle1Desc = CircleService.extractCircleField(raw, 0, "description")
-                this.hotCircle1MemberText = CircleService.formatMemberText(
-                    CircleService.extractCircleField(raw, 0, "memberCount")
-                )
-                this.hotCircle1Joined = CircleService.extractCircleField(raw, 0, "joined")
-
-                this.hotCircle2Id = CircleService.extractCircleField(raw, 1, "id")
-                this.hotCircle2Name = CircleService.extractCircleField(raw, 1, "name")
-                this.hotCircle2Desc = CircleService.extractCircleField(raw, 1, "description")
-                this.hotCircle2MemberText = CircleService.formatMemberText(
-                    CircleService.extractCircleField(raw, 1, "memberCount")
-                )
-                this.hotCircle2Joined = CircleService.extractCircleField(raw, 1, "joined")
-
-                this.circleLoading = false
-                this.circleFirstLoaded = true
-            },
-            { _: String =>
-                this.circleLoading = false
-                this.circleFirstLoaded = true
-            }
-        )
-    }
-
-    func joinHotCircle(circleId: String, index: Int64) {
-        CircleService.joinCircle(
-            circleId,
-            { _: String =>
-                if (index == 1) {
-                    this.hotCircle1Joined = "true"
-                }
-                if (index == 2) {
-                    this.hotCircle2Joined = "true"
-                }
-                this.loadHotCircles()
-            },
-            { _: String => }
-        )
+    func goToCreatePostPage() {
+        Router.push(url: "CreatePostPage")
     }
 
     func build() {
         Column {
             Column {
                 Row {
-                    Column {
-                        Text("欢迎到来，${this.welcomeName}")
-                            .fontSize(28)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
-                            .margin(bottom: 6)
+                    Row {
+                        if (this.currentTab == "recommend") {
+                            Column {
+                                Text("推荐")
+                                    .fontColor(0xFF1D2B53)
+                                    .fontSize(18)
+                                    .fontWeight(FontWeight.Bold)
+                                    .padding(top: 6, bottom: 6)
+                                    .onClick({ _: ClickEvent =>
+                                        this.currentTab = "recommend"
+                                    })
 
-                        Text("今天为你推荐了校园里的热门活动、圈子和同好")
-                            .fontSize(14)
-                            .fontColor(0xFF666666)
+                                Row {}
+                                    .width(20)
+                                    .height(3)
+                                    .backgroundColor(0xFF2F80FF)
+                                    .borderRadius(2)
+                            }
+                            .margin(right: 20)
+                        } else {
+                            Column {
+                                Text("推荐")
+                                    .fontColor(0xFF74829C)
+                                    .fontSize(17)
+                                    .padding(top: 6, bottom: 6)
+                                    .onClick({ _: ClickEvent =>
+                                        this.currentTab = "recommend"
+                                    })
+
+                                Row {}
+                                    .width(20)
+                                    .height(3)
+                                    .backgroundColor(0x00000000)
+                            }
+                            .margin(right: 20)
+                        }
+
+                        if (this.currentTab == "latest") {
+                            Column {
+                                Text("最新")
+                                    .fontColor(0xFF1D2B53)
+                                    .fontSize(18)
+                                    .fontWeight(FontWeight.Bold)
+                                    .padding(top: 6, bottom: 6)
+                                    .onClick({ _: ClickEvent =>
+                                        this.currentTab = "latest"
+                                    })
+
+                                Row {}
+                                    .width(20)
+                                    .height(3)
+                                    .backgroundColor(0xFF2F80FF)
+                                    .borderRadius(2)
+                            }
+                        } else {
+                            Column {
+                                Text("最新")
+                                    .fontColor(0xFF74829C)
+                                    .fontSize(17)
+                                    .padding(top: 6, bottom: 6)
+                                    .onClick({ _: ClickEvent =>
+                                        this.currentTab = "latest"
+                                    })
+
+                                Row {}
+                                    .width(20)
+                                    .height(3)
+                                    .backgroundColor(0x00000000)
+                            }
+                        }
+                    }
+                    .layoutWeight(3)
+                    .alignItems(VerticalAlign.Center)
+
+                    Row {
+                        Text("⌕")
+                            .width(30)
+                            .height(30)
+                            .fontColor(0xFF2F80FF)
+                            .fontSize(18)
+                            .fontWeight(FontWeight.Bold)
+                            .textAlign(TextAlign.Center)
                     }
                     .layoutWeight(1)
-
-                    Text("消息")
-                        .fontSize(13)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFFFFF)
-                        .padding(left: 14, right: 14, top: 8, bottom: 8)
-                        .borderRadius(18)
+                    .justifyContent(FlexAlign.End)
                 }
                 .width(100.percent)
-                .margin(bottom: 16)
-
-                Row {
-                    Text("搜索同好 / 圈子 / 活动")
-                        .fontSize(14)
-                        .fontColor(0xFF999999)
-                }
-                .width(100.percent)
-                .height(44)
-                .padding(left: 16, right: 16)
-                .backgroundColor(0xFFFFFFFF)
-                .borderRadius(22)
-
-                Row {
-                    Text("桌游")
-                        .fontSize(12)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFE8DE)
-                        .padding(left: 10, right: 10, top: 6, bottom: 6)
-                        .borderRadius(14)
-                        .margin(right: 8)
-
-                    Text("跑步")
-                        .fontSize(12)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFE8DE)
-                        .padding(left: 10, right: 10, top: 6, bottom: 6)
-                        .borderRadius(14)
-                        .margin(right: 8)
-
-                    Text("电影")
-                        .fontSize(12)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFE8DE)
-                        .padding(left: 10, right: 10, top: 6, bottom: 6)
-                        .borderRadius(14)
-                        .margin(right: 8)
-
-                    Text("摄影")
-                        .fontSize(12)
-                        .fontColor(0xFFFF7A45)
-                        .backgroundColor(0xFFFFE8DE)
-                        .padding(left: 10, right: 10, top: 6, bottom: 6)
-                        .borderRadius(14)
-                }
-                .width(100.percent)
-                .margin(top: 12)
-
-                Button("个人中心")
-                    .width(100.percent)
-                    .height(42)
-                    .backgroundColor(0xFFFFFFFF)
-                    .fontColor(0xFFFF7A45)
-                    .borderRadius(18)
-                    .margin(top: 14)
-                    .onClick({ _: ClickEvent =>
-                        this.goToProfilePage()
-                    })
+                .alignItems(VerticalAlign.Center)
             }
             .width(100.percent)
-            .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .padding(left: 12, right: 12, top: 10, bottom: 10)
+            .backgroundColor(0xFFFFFFFF)
 
             Scroll {
                 Column {
-                    Column {
-                        Text("本周校园热度上升中")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFFFFFFFF)
-                            .margin(bottom: 8)
-
-                        Text("飞盘、桌游、摄影活动正在报名，去看看有没有你感兴趣的局")
-                            .fontSize(13)
-                            .fontColor(0xFFFFF2EB)
-                            .margin(bottom: 16)
-
-                        Button("马上看看")
-                            .width(120)
-                            .height(40)
-                            .backgroundColor(0xFFFFFFFF)
-                            .fontColor(0xFFFF7A45)
-                            .borderRadius(20)
-                            .onClick({ _: ClickEvent =>
-                                this.goToEventsPage()
-                            })
-                    }
-                    .width(100.percent)
-                    .padding(18)
-                    .backgroundColor(0xFFFF7A45)
-                    .borderRadius(20)
-                    .margin(bottom: 16)
-
-                    Text("快捷入口")
-                        .fontSize(20)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor(0xFF222222)
-                        .margin(bottom: 12)
-
-                    Row {
-                        Column {
-                            Text("找同好")
-                                .fontSize(17)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("按兴趣匹配新朋友")
-                                .fontSize(12)
-                                .fontColor(0xFF777777)
-                                .margin(bottom: 12)
-
-                            Button("去看看")
-                                .width(100.percent)
-                                .height(34)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
-                                .borderRadius(16)
-                                .onClick({ _: ClickEvent =>
-                                    this.goToProfilePage()
-                                })
-                        }
-                        .layoutWeight(1)
-                        .padding(14)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(right: 8)
-
-                        Column {
-                            Text("逛圈子")
-                                .fontSize(17)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("发现感兴趣的组织")
-                                .fontSize(12)
-                                .fontColor(0xFF777777)
-                                .margin(bottom: 12)
-
-                            Button("去逛逛")
-                                .width(100.percent)
-                                .height(34)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
-                                .borderRadius(16)
-                                .onClick({ _: ClickEvent =>
-                                    this.goToCirclesPage()
-                                })
-                        }
-                        .layoutWeight(1)
-                        .padding(14)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                    }
-                    .width(100.percent)
-                    .margin(bottom: 8)
-
-                    Row {
-                        Column {
-                            Text("约活动")
-                                .fontSize(17)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("参加本周热门活动")
-                                .fontSize(12)
-                                .fontColor(0xFF777777)
-                                .margin(bottom: 12)
-
-                            Button("去看看")
-                                .width(100.percent)
-                                .height(34)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
-                                .borderRadius(16)
-                                .onClick({ _: ClickEvent =>
-                                    this.goToEventsPage()
-                                })
-                        }
-                        .layoutWeight(1)
-                        .padding(14)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(right: 8)
-
-                        Column {
-                            Text("我发起的活动")
-                                .fontSize(17)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("查看自己创建的活动")
-                                .fontSize(12)
-                                .fontColor(0xFF777777)
-                                .margin(bottom: 12)
-
-                            Button("去查看")
-                                .width(100.percent)
-                                .height(34)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
-                                .borderRadius(16)
-                                .onClick({ _: ClickEvent =>
-                                    this.goToMyCreatedEventsPage()
-                                })
-                        }
-                        .layoutWeight(1)
-                        .padding(14)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                    }
-                    .width(100.percent)
-                    .margin(bottom: 16)
-
-                    Row {
-                        Text("为你推荐的同好")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
-
-                        Text("查看更多")
-                            .fontSize(13)
-                            .fontColor(0xFFFF7A45)
-                    }
-                    .width(100.percent)
-                    .justifyContent(FlexAlign.SpaceBetween)
-                    .alignItems(VerticalAlign.Center)
-                    .margin(bottom: 12)
-
-                    Column {
+                    if (this.currentTab == "recommend") {
                         Row {
                             Column {
-                                Text("小周")
-                                    .fontSize(18)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
+                                Column {
+                                    Row {
+                                        Text("校园随拍")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(148)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFDDEBFF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
 
-                                Text("计算机 · 大二")
-                                    .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    Text("晚霞把教学楼照成了蓝橘色")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("路过新主楼时随手拍到，今天校园真的很像电影镜头。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("知")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF7FB2FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("知行同学")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("摄影圈")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 128")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("活动")
+                                            .fontSize(11)
+                                            .fontColor(0xFFFF8A3D)
+                                            .backgroundColor(0xFFFFF1E7)
+                                            .padding(left: 8, right: 8, top: 4, bottom: 4)
+                                            .borderRadius(10)
+                                    }
+                                    .margin(bottom: 8)
+
+                                    Row {
+                                        Text("飞盘体验局")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFF8A3D)
+                                    }
+                                    .width(100.percent)
+                                    .height(102)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFFFF4EB)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("今晚 19:00，一起跑起来")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("零基础也能来，社恐友好，现场会带基础教学和简单对抗。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Column {
+                                        Text("报名截止：05-12 18:00")
+                                            .fontSize(11)
+                                            .fontColor(0xFF8D6E63)
+                                            .margin(bottom: 4)
+
+                                        Text("人数限制：40人")
+                                            .fontSize(11)
+                                            .fontColor(0xFF8D6E63)
+                                            .margin(bottom: 4)
+
+                                        Text("报名中")
+                                            .fontSize(11)
+                                            .fontColor(0xFFFF8A3D)
+                                    }
+                                    .alignItems(HorizontalAlign.Start)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("灵感记录")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(126)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFE8F5FF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("自习室门口的猫今天也在上班")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("连续三天都看到它趴在同一个位置，治愈值拉满。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("阿")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF8BB6FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("阿宁")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("校园日常")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 96")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
                             }
                             .layoutWeight(1)
+                            .margin(right: 6)
 
-                            Text("在线")
-                                .fontSize(11)
-                                .fontColor(0xFF2E9B4B)
-                                .backgroundColor(0xFFEAF7EE)
-                                .padding(left: 10, right: 10, top: 6, bottom: 6)
-                                .borderRadius(12)
-                        }
-                        .width(100.percent)
-                        .margin(bottom: 10)
-
-                        Text("89% 兴趣契合")
-                            .fontSize(13)
-                            .fontColor(0xFFFF7A45)
-                            .margin(bottom: 8)
-
-                        Text("桌游 / 电影 / 羽毛球")
-                            .fontSize(12)
-                            .fontColor(0xFF999999)
-                            .margin(bottom: 14)
-
-                        Button("打招呼")
-                            .width(100.percent)
-                            .height(42)
-                            .backgroundColor(0xFFFF7A45)
-                            .fontColor(0xFFFFFFFF)
-                            .borderRadius(14)
-                    }
-                    .width(100.percent)
-                    .padding(16)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 12)
-
-                    Column {
-                        Row {
                             Column {
-                                Text("阿宁")
-                                    .fontSize(18)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
-                                    .margin(bottom: 6)
+                                Column {
+                                    Row {
+                                        Text("社团日常")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(116)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
 
-                                Text("新闻 · 大三")
-                                    .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    Text("排练结束后顺路去吃了北门那家米线")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("今天合唱排练状态不错，结束后大家一起去夜宵，气氛特别好。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("小")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF73A8FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("小周")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("合唱团")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 72")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("氛围感封面")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(164)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFD9EAFF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("今天图书馆这组蓝白色调太适合出片")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("想做一个‘北航春天’拍照点合集，这里先收藏一下。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("木")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF5E97FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("木子")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("摄影圈")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 184")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("操场夜跑")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(132)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFE3EEFF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("今天的风很舒服，夜跑体验满分")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("操场人很多，感觉最近大家都重新开始认真运动了。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("晨")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF6CA3FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("晨星")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("跑步圈")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 56")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
                             }
                             .layoutWeight(1)
-
-                            Text("在线")
-                                .fontSize(11)
-                                .fontColor(0xFF2E9B4B)
-                                .backgroundColor(0xFFEAF7EE)
-                                .padding(left: 10, right: 10, top: 6, bottom: 6)
-                                .borderRadius(12)
                         }
                         .width(100.percent)
-                        .margin(bottom: 10)
-
-                        Text("84% 兴趣契合")
-                            .fontSize(13)
-                            .fontColor(0xFFFF7A45)
-                            .margin(bottom: 8)
-
-                        Text("摄影 / 探店 / 电影")
-                            .fontSize(12)
-                            .fontColor(0xFF999999)
-                            .margin(bottom: 14)
-
-                        Button("打招呼")
-                            .width(100.percent)
-                            .height(42)
-                            .backgroundColor(0xFFFF7A45)
-                            .fontColor(0xFFFFFFFF)
-                            .borderRadius(14)
-                    }
-                    .width(100.percent)
-                    .padding(16)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 16)
-
-                    Row {
-                        Text("热门圈子")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
-
-                        Text("发现更多")
-                            .fontSize(13)
-                            .fontColor(0xFFFF7A45)
-                            .onClick({ _: ClickEvent =>
-                                this.goToCirclesPage()
-                            })
-                    }
-                    .width(100.percent)
-                    .justifyContent(FlexAlign.SpaceBetween)
-                    .alignItems(VerticalAlign.Center)
-                    .margin(bottom: 12)
-
-                    if (!this.circleFirstLoaded && this.circleLoading) {
-                        Column {
-                            Text("正在加载圈子...")
-                                .fontSize(16)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("稍等一下，真实热门圈子马上就来。")
-                                .fontSize(13)
-                                .fontColor(0xFF777777)
-                        }
-                        .width(100.percent)
-                        .padding(16)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(bottom: 12)
-                    } else if (!this.hasHotCircles()) {
-                        Column {
-                            Text("暂时还没有热门圈子")
-                                .fontSize(16)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
-                                .margin(bottom: 8)
-
-                            Text("等圈子数据接通后，这里会显示真实圈子。")
-                                .fontSize(13)
-                                .fontColor(0xFF777777)
-                        }
-                        .width(100.percent)
-                        .padding(16)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(bottom: 12)
                     } else {
-                        if (this.hotCircle1Name != "") {
-                            Row {
-                                Column {
-                                    Text(this.hotCircle1Name)
-                                        .fontSize(17)
-                                        .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF222222)
-                                        .margin(bottom: 6)
-
-                                    Text(this.hotCircle1MemberText)
-                                        .fontSize(12)
-                                        .fontColor(0xFFFF7A45)
-                                        .margin(bottom: 8)
-
-                                    Text(this.hotCircle1Desc)
-                                        .fontSize(13)
-                                        .fontColor(0xFF777777)
-                                }
-                                .layoutWeight(1)
-
-                                Button(CircleService.formatJoinButtonText(this.hotCircle1Joined))
-                                    .width(72)
-                                    .height(36)
-                                    .enabled(this.hotCircle1Joined != "true")
-                                    .backgroundColor(0xFFFFF1EA)
-                                    .fontColor(0xFFFF7A45)
-                                    .borderRadius(18)
-                                    .onClick({ _: ClickEvent =>
-                                        this.joinHotCircle(this.hotCircle1Id, 1)
-                                    })
-                            }
-                            .width(100.percent)
-                            .padding(16)
-                            .backgroundColor(0xFFFFFFFF)
-                            .borderRadius(18)
-                            .margin(bottom: 12)
-                        }
-
-                        if (this.hotCircle2Name != "") {
-                            Row {
-                                Column {
-                                    Text(this.hotCircle2Name)
-                                        .fontSize(17)
-                                        .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF222222)
-                                        .margin(bottom: 6)
-
-                                    Text(this.hotCircle2MemberText)
-                                        .fontSize(12)
-                                        .fontColor(0xFFFF7A45)
-                                        .margin(bottom: 8)
-
-                                    Text(this.hotCircle2Desc)
-                                        .fontSize(13)
-                                        .fontColor(0xFF777777)
-                                }
-                                .layoutWeight(1)
-
-                                Button(CircleService.formatJoinButtonText(this.hotCircle2Joined))
-                                    .width(72)
-                                    .height(36)
-                                    .enabled(this.hotCircle2Joined != "true")
-                                    .backgroundColor(0xFFFFF1EA)
-                                    .fontColor(0xFFFF7A45)
-                                    .borderRadius(18)
-                                    .onClick({ _: ClickEvent =>
-                                        this.joinHotCircle(this.hotCircle2Id, 2)
-                                    })
-                            }
-                            .width(100.percent)
-                            .padding(16)
-                            .backgroundColor(0xFFFFFFFF)
-                            .borderRadius(18)
-                            .margin(bottom: 12)
-                        }
-                    }
-
-                    Row {
-                        Text("本周精选活动")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
-
-                        Button("全部活动")
-                            .height(32)
-                            .backgroundColor(0xFFFFF1EA)
-                            .fontColor(0xFFFF7A45)
-                            .borderRadius(16)
-                            .onClick({ _: ClickEvent =>
-                                this.goToEventsPage()
-                            })
-                    }
-                    .width(100.percent)
-                    .justifyContent(FlexAlign.SpaceBetween)
-                    .alignItems(VerticalAlign.Center)
-                    .margin(top: 4, bottom: 12)
-
-                    Button("发起活动")
-                        .width(100.percent)
-                        .height(42)
-                        .backgroundColor(0xFFFFF1EA)
-                        .fontColor(0xFFFF7A45)
-                        .borderRadius(14)
-                        .margin(bottom: 12)
-                        .onClick({ _: ClickEvent =>
-                            this.goToCreateEventPage()
-                        })
-
-                    Column {
                         Row {
                             Column {
-                                Text("飞盘体验局")
-                                    .fontSize(18)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                Column {
+                                    Row {
+                                        Text("刚刚更新")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(122)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .borderRadius(14)
                                     .margin(bottom: 8)
 
-                                Text("今晚 19:00")
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 4)
+                                    Text("操场今天风很舒服，跑步的人特别多")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
 
-                                Text("西操场")
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
+                                    Text("晚上 8 点随手拍的，感觉最近大家都开始恢复运动了。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("晨")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF7CAFFF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("晨星")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("跑步圈")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 33")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("活动")
+                                            .fontSize(11)
+                                            .fontColor(0xFFFF8A3D)
+                                            .backgroundColor(0xFFFFF1E7)
+                                            .padding(left: 8, right: 8, top: 4, bottom: 4)
+                                            .borderRadius(10)
+                                    }
+                                    .margin(bottom: 8)
+
+                                    Row {
+                                        Text("电影交换夜")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFF8A3D)
+                                    }
+                                    .width(100.percent)
+                                    .height(98)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFFFF4EB)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("周六 18:30，一起交换片单")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("每个人带一部想推荐的电影来聊，轻社交，很适合第一次认识新朋友。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Column {
+                                        Text("报名截止：05-14 16:00")
+                                            .fontSize(11)
+                                            .fontColor(0xFF8D6E63)
+                                            .margin(bottom: 4)
+
+                                        Text("人数限制：30人")
+                                            .fontSize(11)
+                                            .fontColor(0xFF8D6E63)
+                                            .margin(bottom: 4)
+
+                                        Text("报名中")
+                                            .fontSize(11)
+                                            .fontColor(0xFFFF8A3D)
+                                    }
+                                    .alignItems(HorizontalAlign.Start)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
                             }
                             .layoutWeight(1)
+                            .margin(right: 6)
 
-                            Text("活动")
-                                .fontSize(11)
-                                .fontColor(0xFFFFFFFF)
-                                .backgroundColor(0xFFFF7A45)
-                                .padding(left: 10, right: 10, top: 6, bottom: 6)
-                                .borderRadius(12)
-                        }
-                        .width(100.percent)
-                        .margin(bottom: 10)
-
-                        Text("还剩 12 个名额")
-                            .fontSize(12)
-                            .fontColor(0xFFFF7A45)
-                            .margin(bottom: 14)
-
-                        Button("立即报名")
-                            .width(100.percent)
-                            .height(42)
-                            .backgroundColor(0xFFFF7A45)
-                            .fontColor(0xFFFFFFFF)
-                            .borderRadius(14)
-                    }
-                    .width(100.percent)
-                    .padding(16)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 12)
-
-                    Column {
-                        Row {
                             Column {
-                                Text("电影交换夜")
-                                    .fontSize(18)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                Column {
+                                    Row {
+                                        Text("最新帖子")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(162)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFD9EAFF)
+                                    .borderRadius(14)
                                     .margin(bottom: 8)
 
-                                Text("周六 18:30")
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
-                                    .margin(bottom: 4)
+                                    Text("刚从社团摊位回来，大家给的新生攻略很实用")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
 
-                                Text("学生活动中心")
-                                    .fontSize(13)
-                                    .fontColor(0xFF666666)
+                                    Text("拍了几张摊位照片，之后想整理一份‘新生逛摊路线图’。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("林")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF6CA3FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("林一")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("校园攻略")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 58")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("刚发布")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(118)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("今天食堂二层新开的窗口还不错")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("点了份招牌套餐，性价比挺高，准备再去试试别的口味。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("饭")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF5A96FF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("饭搭子")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("吃喝小组")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 24")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+
+                                Column {
+                                    Row {
+                                        Text("新角度")
+                                            .fontSize(17)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFF2F80FF)
+                                    }
+                                    .width(100.percent)
+                                    .height(132)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFFE3EEFF)
+                                    .borderRadius(14)
+                                    .margin(bottom: 8)
+
+                                    Text("宿舍楼下的玉兰花终于开了")
+                                        .fontSize(14)
+                                        .fontWeight(FontWeight.Bold)
+                                        .fontColor(0xFF24324A)
+                                        .margin(bottom: 6)
+
+                                    Text("今天光线很好，顺手拍了一组，准备回头发到摄影圈。")
+                                        .fontSize(12)
+                                        .fontColor(0xFF6D7B99)
+                                        .lineHeight(18)
+                                        .margin(bottom: 10)
+
+                                    Row {
+                                        Row {
+                                            Row {
+                                                Text("木")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(28)
+                                            .height(28)
+                                            .backgroundColor(0xFF7AAFFF)
+                                            .borderRadius(14)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .margin(right: 8)
+
+                                            Column {
+                                                Text("木子")
+                                                    .fontSize(12)
+                                                    .fontColor(0xFF42526B)
+                                                    .margin(bottom: 4)
+
+                                                Text("摄影圈")
+                                                    .fontSize(10)
+                                                    .fontColor(0xFF2F80FF)
+                                                    .backgroundColor(0xFFEAF2FF)
+                                                    .padding(left: 7, right: 7, top: 3, bottom: 3)
+                                                    .borderRadius(9)
+                                            }
+                                            .alignItems(HorizontalAlign.Start)
+                                        }
+
+                                        Text("❤ 19")
+                                            .fontSize(12)
+                                            .fontColor(0xFF7E8CA8)
+                                    }
+                                    .width(100.percent)
+                                    .justifyContent(FlexAlign.SpaceBetween)
+                                    .alignItems(VerticalAlign.Bottom)
+                                }
+                                .width(100.percent)
+                                .padding(left: 8, right: 8, top: 8, bottom: 10)
+                                .backgroundColor(0xFFFFFFFF)
+                                .borderRadius(16)
                             }
                             .layoutWeight(1)
-
-                            Text("活动")
-                                .fontSize(11)
-                                .fontColor(0xFFFFFFFF)
-                                .backgroundColor(0xFFFF7A45)
-                                .padding(left: 10, right: 10, top: 6, bottom: 6)
-                                .borderRadius(12)
                         }
                         .width(100.percent)
-                        .margin(bottom: 10)
-
-                        Text("报名即将截止")
-                            .fontSize(12)
-                            .fontColor(0xFFFF7A45)
-                            .margin(bottom: 14)
-
-                        Button("立即报名")
-                            .width(100.percent)
-                            .height(42)
-                            .backgroundColor(0xFFFF7A45)
-                            .fontColor(0xFFFFFFFF)
-                            .borderRadius(14)
                     }
-                    .width(100.percent)
-                    .padding(16)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 16)
-
-                    Text("账号设置")
-                        .fontSize(20)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor(0xFF222222)
-                        .margin(bottom: 12)
-
-                    Button("退出登录")
-                        .width(100.percent)
-                        .height(46)
-                        .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFF666666)
-                        .borderRadius(16)
-                        .margin(bottom: 24)
-                        .onClick({ _: ClickEvent =>
-                            ApiConfig.clearAccessToken()
-                            Router.push(url: "LoginPage")
-                        })
                 }
                 .width(100.percent)
-                .padding(left: 16, right: 16, top: 16, bottom: 20)
+                .padding(left: 12, right: 12, top: 8, bottom: 96)
             }
             .layoutWeight(1)
+
+            Row {
+                Row {
+                    Text("广场")
+                        .fontColor(0xFF2F80FF)
+                        .fontWeight(FontWeight.Bold)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Row {
+                    Text("圈子")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToCirclesPage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Button("+")
+                    .width(52)
+                    .height(52)
+                    .backgroundColor(0xFF2F80FF)
+                    .fontColor(0xFFFFFFFF)
+                    .fontSize(28)
+                    .fontWeight(FontWeight.Bold)
+                    .borderRadius(26)
+                    .margin(left: 6, right: 6)
+                    .onClick({ _: ClickEvent =>
+                        this.goToCreatePostPage()
+                    })
+
+                Row {
+                    Text("活动")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToEventsPage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+
+                Row {
+                    Text("我的")
+                        .fontColor(0xFF5E6C84)
+                        .fontSize(15)
+                        .onClick({ _: ClickEvent =>
+                            this.goToProfilePage()
+                        })
+                }
+                .layoutWeight(1)
+                .height(40)
+                .justifyContent(FlexAlign.Center)
+                .alignItems(VerticalAlign.Center)
+            }
+            .alignItems(VerticalAlign.Center)
+            .width(100.percent)
+            .padding(left: 10, right: 10, top: 10, bottom: 16)
+            .backgroundColor(0xFFFFFFFF)
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

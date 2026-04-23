@@ -9,6 +9,7 @@ import ohos.router.*
 import ohos_app_cangjie_entry.common.ApiConfig
 import ohos_app_cangjie_entry.service.UserService
 import ohos_app_cangjie_entry.service.EventService
+import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -24,11 +25,15 @@ class ProfilePage {
     @State var department: String = ""
     @State var bio: String = ""
     @State var email: String = ""
+    @State var avatarUrl: String = ""
+    @State var avatarPreviewUri: String = ""
 
     @State var inputNickname: String = ""
     @State var inputGrade: String = ""
     @State var inputDepartment: String = ""
+    @State var inputAvatarUrl: String = ""
     @State var inputBio: String = ""
+    @State var uploadingAvatar: Bool = false
 
     @State var joined1Id: String = ""
     @State var joined1Title: String = ""
@@ -114,6 +119,8 @@ class ProfilePage {
         this.department = UserService.extractProfileField(raw, "department")
         this.bio = UserService.extractProfileField(raw, "bio")
         this.email = UserService.extractProfileField(raw, "email")
+        this.avatarUrl = UserService.extractProfileField(raw, "avatarUrl")
+        this.avatarPreviewUri = this.avatarUrl
     }
 
     func fillJoinedEvents(raw: String) {
@@ -182,22 +189,26 @@ class ProfilePage {
         let finalNickname = this.pickValue(this.inputNickname, this.nickname)
         let finalGrade = this.pickValue(this.inputGrade, this.grade)
         let finalDepartment = this.pickValue(this.inputDepartment, this.department)
+        let finalAvatarUrl = this.pickValue(this.inputAvatarUrl, this.avatarUrl)
         let finalBio = this.pickValue(this.inputBio, this.bio)
 
         UserService.updateMyProfile(
             finalNickname,
             finalGrade,
             finalDepartment,
+            finalAvatarUrl,
             finalBio,
             { _: String =>
                 this.nickname = finalNickname
                 this.grade = finalGrade
                 this.department = finalDepartment
+                this.avatarUrl = finalAvatarUrl
                 this.bio = finalBio
 
                 this.inputNickname = ""
                 this.inputGrade = ""
                 this.inputDepartment = ""
+                this.inputAvatarUrl = ""
                 this.inputBio = ""
 
                 this.saving = false
@@ -206,6 +217,35 @@ class ProfilePage {
             { msg: String =>
                 this.saving = false
                 this.errorMsg = msg
+            }
+        )
+    }
+
+    func getAvatarButtonText(): String {
+        if (this.uploadingAvatar) {
+            return "头像上传中..."
+        }
+        return "从相册更换头像"
+    }
+
+    func chooseAvatar() {
+        this.errorMsg = ""
+        this.successMsg = ""
+        this.uploadingAvatar = true
+        ImageUploadService.pickAndUploadImage(
+            { localUri: String =>
+                this.avatarPreviewUri = localUri
+            },
+            { imageUrl: String =>
+                this.avatarUrl = imageUrl
+                this.avatarPreviewUri = imageUrl
+                this.inputAvatarUrl = imageUrl
+                this.uploadingAvatar = false
+                this.successMsg = "头像已上传，点击保存资料后生效"
+            },
+            { msg: String =>
+                this.errorMsg = msg
+                this.uploadingAvatar = false
             }
         )
     }
@@ -346,6 +386,40 @@ class ProfilePage {
                             .fontColor(0xFF222222)
                             .margin(bottom: 14)
 
+                        Row {
+                            if (this.avatarPreviewUri != "") {
+                                Image(this.avatarPreviewUri)
+                                    .width(72)
+                                    .height(72)
+                                    .borderRadius(36)
+                                    .margin(right: 14)
+                            } else {
+                                Text("头像")
+                                    .width(72)
+                                    .height(72)
+                                    .fontSize(16)
+                                    .fontColor(0xFFFF7A45)
+                                    .backgroundColor(0xFFFFF1EA)
+                                    .borderRadius(36)
+                                    .margin(right: 14)
+                            }
+
+                            Column {
+                                Text(this.nickname)
+                                    .fontSize(18)
+                                    .fontWeight(FontWeight.Bold)
+                                    .fontColor(0xFF222222)
+                                    .margin(bottom: 6)
+
+                                Text(this.department)
+                                    .fontSize(13)
+                                    .fontColor(0xFF777777)
+                            }
+                            .layoutWeight(1)
+                        }
+                        .width(100.percent)
+                        .margin(bottom: 18)
+
                         Text("校园邮箱")
                             .fontSize(13)
                             .fontColor(0xFF777777)
@@ -407,6 +481,35 @@ class ProfilePage {
                                 this.inputDepartment = v
                             })
 
+                        Text("当前头像")
+                            .fontSize(13)
+                            .fontColor(0xFF777777)
+                            .margin(bottom: 6)
+
+                        if (this.avatarUrl != "") {
+                            Text("已设置头像")
+                                .fontSize(14)
+                                .fontColor(0xFF222222)
+                                .margin(bottom: 12)
+                        } else {
+                            Text("未设置头像")
+                                .fontSize(14)
+                                .fontColor(0xFF777777)
+                                .margin(bottom: 12)
+                        }
+
+                        Button(this.getAvatarButtonText())
+                            .width(100.percent)
+                            .height(42)
+                            .enabled(!this.uploadingAvatar && !this.saving)
+                            .backgroundColor(0xFFFFF1EA)
+                            .fontColor(0xFFFF7A45)
+                            .borderRadius(14)
+                            .margin(bottom: 14)
+                            .onClick({ =>
+                                this.chooseAvatar()
+                            })
+
                         Text("当前简介")
                             .fontSize(13)
                             .fontColor(0xFF777777)
@@ -427,7 +530,7 @@ class ProfilePage {
                         Button(this.getSaveButtonText())
                             .width(100.percent)
                             .height(42)
-                            .enabled(!this.saving)
+                            .enabled(!this.saving && !this.uploadingAvatar)
                             .backgroundColor(0xFFFF7A45)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(14)

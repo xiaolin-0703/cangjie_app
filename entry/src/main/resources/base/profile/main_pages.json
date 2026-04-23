@@ -4,7 +4,7 @@
     "pages/LoginPage",
     "pages/HomePage",
     "pages/ProfileSetupPage",
-    "pages/CreatEventPage",
+    "pages/CreateEventPage",
     "pages/EventsPage",
     "pages/MyCreatedEventsPage",
     "pages/EventDetailPage",
