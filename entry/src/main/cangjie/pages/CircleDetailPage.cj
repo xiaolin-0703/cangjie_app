@@ -24,26 +24,31 @@ class CircleDetailPage {
     @State var post1Content: String = ""
     @State var post1Author: String = ""
     @State var post1Time: String = ""
+    @State var post1ImageUrl: String = ""
 
     @State var post2Title: String = ""
     @State var post2Content: String = ""
     @State var post2Author: String = ""
     @State var post2Time: String = ""
+    @State var post2ImageUrl: String = ""
 
     @State var post3Title: String = ""
     @State var post3Content: String = ""
     @State var post3Author: String = ""
     @State var post3Time: String = ""
+    @State var post3ImageUrl: String = ""
 
     @State var post4Title: String = ""
     @State var post4Content: String = ""
     @State var post4Author: String = ""
     @State var post4Time: String = ""
+    @State var post4ImageUrl: String = ""
 
     @State var post5Title: String = ""
     @State var post5Content: String = ""
     @State var post5Author: String = ""
     @State var post5Time: String = ""
+    @State var post5ImageUrl: String = ""
 
     public func aboutToAppear(): Unit {
         this.circleId = CircleService.getCurrentCircleId()
@@ -72,26 +77,31 @@ class CircleDetailPage {
         this.post1Content = ""
         this.post1Author = ""
         this.post1Time = ""
+        this.post1ImageUrl = ""
 
         this.post2Title = ""
         this.post2Content = ""
         this.post2Author = ""
         this.post2Time = ""
+        this.post2ImageUrl = ""
 
         this.post3Title = ""
         this.post3Content = ""
         this.post3Author = ""
         this.post3Time = ""
+        this.post3ImageUrl = ""
 
         this.post4Title = ""
         this.post4Content = ""
         this.post4Author = ""
         this.post4Time = ""
+        this.post4ImageUrl = ""
 
         this.post5Title = ""
         this.post5Content = ""
         this.post5Author = ""
         this.post5Time = ""
+        this.post5ImageUrl = ""
     }
 
     func hasPosts(): Bool {
@@ -139,26 +149,31 @@ class CircleDetailPage {
                 this.post1Content = CircleService.extractPostField(raw, 0, "content")
                 this.post1Author = CircleService.extractPostField(raw, 0, "nickname")
                 this.post1Time = CircleService.extractPostField(raw, 0, "createdAt")
+                this.post1ImageUrl = CircleService.extractPostField(raw, 0, "imageUrl")
 
                 this.post2Title = CircleService.extractPostField(raw, 1, "title")
                 this.post2Content = CircleService.extractPostField(raw, 1, "content")
                 this.post2Author = CircleService.extractPostField(raw, 1, "nickname")
                 this.post2Time = CircleService.extractPostField(raw, 1, "createdAt")
+                this.post2ImageUrl = CircleService.extractPostField(raw, 1, "imageUrl")
 
                 this.post3Title = CircleService.extractPostField(raw, 2, "title")
                 this.post3Content = CircleService.extractPostField(raw, 2, "content")
                 this.post3Author = CircleService.extractPostField(raw, 2, "nickname")
                 this.post3Time = CircleService.extractPostField(raw, 2, "createdAt")
+                this.post3ImageUrl = CircleService.extractPostField(raw, 2, "imageUrl")
 
                 this.post4Title = CircleService.extractPostField(raw, 3, "title")
                 this.post4Content = CircleService.extractPostField(raw, 3, "content")
                 this.post4Author = CircleService.extractPostField(raw, 3, "nickname")
                 this.post4Time = CircleService.extractPostField(raw, 3, "createdAt")
+                this.post4ImageUrl = CircleService.extractPostField(raw, 3, "imageUrl")
 
                 this.post5Title = CircleService.extractPostField(raw, 4, "title")
                 this.post5Content = CircleService.extractPostField(raw, 4, "content")
                 this.post5Author = CircleService.extractPostField(raw, 4, "nickname")
                 this.post5Time = CircleService.extractPostField(raw, 4, "createdAt")
+                this.post5ImageUrl = CircleService.extractPostField(raw, 4, "imageUrl")
 
                 this.loading = false
             },
@@ -353,6 +368,14 @@ class CircleDetailPage {
                                 .fontColor(0xFF666666)
                                 .margin(bottom: 10)
 
+                            if (this.post1ImageUrl != "") {
+                                Image(this.post1ImageUrl)
+                                    .width(100.percent)
+                                    .height(180)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                            }
+
                             Text(this.post1Author + " · " + this.post1Time)
                                 .fontSize(12)
                                 .fontColor(0xFFFF7A45)
@@ -376,6 +399,14 @@ class CircleDetailPage {
                                 .fontSize(14)
                                 .fontColor(0xFF666666)
                                 .margin(bottom: 10)
+
+                            if (this.post2ImageUrl != "") {
+                                Image(this.post2ImageUrl)
+                                    .width(100.percent)
+                                    .height(180)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                            }
 
                             Text(this.post2Author + " · " + this.post2Time)
                                 .fontSize(12)
@@ -401,6 +432,14 @@ class CircleDetailPage {
                                 .fontColor(0xFF666666)
                                 .margin(bottom: 10)
 
+                            if (this.post3ImageUrl != "") {
+                                Image(this.post3ImageUrl)
+                                    .width(100.percent)
+                                    .height(180)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                            }
+
                             Text(this.post3Author + " · " + this.post3Time)
                                 .fontSize(12)
                                 .fontColor(0xFFFF7A45)
@@ -425,6 +464,14 @@ class CircleDetailPage {
                                 .fontColor(0xFF666666)
                                 .margin(bottom: 10)
 
+                            if (this.post4ImageUrl != "") {
+                                Image(this.post4ImageUrl)
+                                    .width(100.percent)
+                                    .height(180)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                            }
+
                             Text(this.post4Author + " · " + this.post4Time)
                                 .fontSize(12)
                                 .fontColor(0xFFFF7A45)
@@ -448,6 +495,14 @@ class CircleDetailPage {
                                 .fontSize(14)
                                 .fontColor(0xFF666666)
                                 .margin(bottom: 10)
+
+                            if (this.post5ImageUrl != "") {
+                                Image(this.post5ImageUrl)
+                                    .width(100.percent)
+                                    .height(180)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                            }
 
                             Text(this.post5Author + " · " + this.post5Time)
                                 .fontSize(12)
