@@ -1,7 +1,7 @@
 package ohos_app_cangjie_entry.common
 
 public class ApiConfig {
-    public static let BASE_URL: String = "http://10.192.188.52:3000"
+    public static let BASE_URL: String = "http://101.42.9.121:3000"
     static var accessToken: String = ""
 
     public static func setAccessToken(token: String): Unit {
