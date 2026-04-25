@@ -117,6 +117,72 @@ public class UserService {
     }, options: option)
 }
 
+   public static func updateMyProfileWithAvatar(
+    nickname: String,
+    grade: String,
+    department: String,
+    avatarUrl: String,
+    bio: String,
+    onSuccess: (String) -> Unit,
+    onError: (String) -> Unit
+): Unit {
+    let token = ApiConfig.getAccessToken()
+    if (token == "") {
+        onError("请先登录")
+        return
+    }
+
+    if (nickname == "") {
+        onError("昵称不能为空")
+        return
+    }
+
+    let body =
+        "{\"nickname\":\"${nickname}\"," +
+        "\"grade\":\"${grade}\"," +
+        "\"department\":\"${department}\"," +
+        "\"avatarUrl\":\"${avatarUrl}\"," +
+        "\"bio\":\"${bio}\"}"
+
+    let httpRequest = createHttp()
+    let option = HttpRequestOptions(
+        method: RequestMethod.PUT,
+        extraData: HttpData.STRING_DATA(body),
+        expectDataType: HttpDataType.STRING,
+        header: HashMap<String, String>([
+            ("content-type", "application/json"),
+            ("Authorization", "Bearer ${token}")
+        ])
+    )
+
+    httpRequest.request("${ApiConfig.BASE_URL}/users/me", { err, resp =>
+        if (let Some(_) <- err) {
+            onError("修改资料失败，请检查网络")
+            httpRequest.destroy()
+            return
+        }
+
+        if (let Some(r) <- resp) {
+            let raw = r.result.toString()
+            match (r.responseCode) {
+                case ResponseCode.OK =>
+                    onSuccess(raw)
+                case _ =>
+                    let msg = ApiConfig.extractJsonString(raw, "message")
+                    if (msg == "") {
+                        onError("修改资料失败")
+                    } else {
+                        onError(msg)
+                    }
+            }
+        } else {
+            onError("修改资料失败")
+        }
+
+        httpRequest.destroy()
+    }, options: option)
+}
+
     public static func getMyJoinedEvents(
         onSuccess: (String) -> Unit,
         onError: (String) -> Unit
@@ -295,7 +361,8 @@ public class UserService {
         "{\"nickname\":\"${nickname}\"," +
         "\"grade\":\"${grade}\"," +
         "\"department\":\"${department}\"," +
-        "\"avatarUrl\":\"${avatarUrl}\"}"
+        "\"avatarUrl\":\"${avatarUrl}\"," +
+        "\"identityMode\":\"${mode}\"}"
 
     let httpRequest = createHttp()
     let option = HttpRequestOptions(

@@ -80,18 +80,18 @@ class CreateCirclePage {
                         Text("新建圈子")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text("创建你的兴趣组织，让更多同学加入进来")
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("创建")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -104,7 +104,7 @@ class CreateCirclePage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ _: ClickEvent =>
@@ -114,7 +114,7 @@ class CreateCirclePage {
                     Button("返回首页")
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .onClick({ _: ClickEvent =>
@@ -125,20 +125,20 @@ class CreateCirclePage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
                     Column {
                         Text("圈子名称")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 8)
 
                         TextInput(placeholder: "例如：周末桌游局")
                             .width(100.percent)
                             .height(44)
-                            .backgroundColor(0xFFF4F5F7)
+                            .backgroundColor(0xFFF7FAFF)
                             .borderRadius(16)
                             .margin(bottom: 16)
                             .onChange({ v: String =>
@@ -147,13 +147,13 @@ class CreateCirclePage {
 
                         Text("圈子简介")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 8)
 
                         TextInput(placeholder: "介绍一下你的圈子")
                             .width(100.percent)
                             .height(88)
-                            .backgroundColor(0xFFF4F5F7)
+                            .backgroundColor(0xFFF7FAFF)
                             .borderRadius(16)
                             .margin(bottom: 16)
                             .onChange({ v: String =>
@@ -162,7 +162,7 @@ class CreateCirclePage {
 
                         Text("圈子可见范围")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 10)
 
                         if (this.publicMode) {
@@ -170,7 +170,7 @@ class CreateCirclePage {
                                 Button("公开圈子")
                                     .layoutWeight(1)
                                     .height(40)
-                                    .backgroundColor(0xFFFF7A45)
+                                    .backgroundColor(0xFF2F80FF)
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(20)
                                     .margin(right: 8)
@@ -182,7 +182,7 @@ class CreateCirclePage {
                                     .layoutWeight(1)
                                     .height(40)
                                     .backgroundColor(0xFFFFFFFF)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                                     .borderRadius(20)
                                     .onClick({ _: ClickEvent =>
                                         this.publicMode = false
@@ -196,7 +196,7 @@ class CreateCirclePage {
                                     .layoutWeight(1)
                                     .height(40)
                                     .backgroundColor(0xFFFFFFFF)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                                     .borderRadius(20)
                                     .margin(right: 8)
                                     .onClick({ _: ClickEvent =>
@@ -206,7 +206,7 @@ class CreateCirclePage {
                                 Button("仅成员可见")
                                     .layoutWeight(1)
                                     .height(40)
-                                    .backgroundColor(0xFFFF7A45)
+                                    .backgroundColor(0xFF2F80FF)
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(20)
                                     .onClick({ _: ClickEvent =>
@@ -219,13 +219,13 @@ class CreateCirclePage {
 
                         Text(this.getModeHintText())
                             .fontSize(12)
-                            .fontColor(0xFF999999)
+                            .fontColor(0xFF9AA6BD)
                             .margin(bottom: 16)
 
                         if (this.errorMsg != "") {
                             Text(this.errorMsg)
                                 .fontSize(14)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                                 .margin(bottom: 12)
                         }
 
@@ -240,7 +240,7 @@ class CreateCirclePage {
                             .width(100.percent)
                             .height(44)
                             .enabled(!this.submitting)
-                            .backgroundColor(0xFFFF7A45)
+                            .backgroundColor(0xFF2F80FF)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(18)
                             .margin(bottom: 12)
@@ -252,8 +252,8 @@ class CreateCirclePage {
                             Button("去逛圈子")
                                 .width(100.percent)
                                 .height(44)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
+                                .backgroundColor(0xFFEAF2FF)
+                                .fontColor(0xFF2F80FF)
                                 .borderRadius(18)
                                 .onClick({ _: ClickEvent =>
                                     Router.push(url: "CirclesPage")
@@ -272,6 +272,6 @@ class CreateCirclePage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

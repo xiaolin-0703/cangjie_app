@@ -203,18 +203,18 @@ class RegistrationListPage {
                         Text("报名名单")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text(this.eventTitle)
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("名单")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -227,7 +227,7 @@ class RegistrationListPage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ =>
@@ -237,7 +237,7 @@ class RegistrationListPage {
                     Button(this.getRefreshButtonText())
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .enabled(!this.loading)
@@ -249,7 +249,7 @@ class RegistrationListPage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
@@ -258,12 +258,12 @@ class RegistrationListPage {
                             Text("加载失败")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -277,12 +277,12 @@ class RegistrationListPage {
                             Text("正在加载名单...")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 10)
 
                             Text("稍等一下，报名名单马上就来。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                         }
                         .width(100.percent)
                         .padding(18)
@@ -294,12 +294,12 @@ class RegistrationListPage {
                             Text("暂时还没有报名用户")
                                 .fontSize(20)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 10)
 
                             Text("当前还没有人报名这个活动。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                         }
                         .width(100.percent)
                         .padding(18)
@@ -312,17 +312,17 @@ class RegistrationListPage {
                                 Text(this.reg1Name)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.reg1Meta)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 6)
 
                                 Text(this.reg1Email)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -336,17 +336,17 @@ class RegistrationListPage {
                                 Text(this.reg2Name)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.reg2Meta)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 6)
 
                                 Text(this.reg2Email)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -360,17 +360,17 @@ class RegistrationListPage {
                                 Text(this.reg3Name)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.reg3Meta)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 6)
 
                                 Text(this.reg3Email)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -384,17 +384,17 @@ class RegistrationListPage {
                                 Text(this.reg4Name)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.reg4Meta)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 6)
 
                                 Text(this.reg4Email)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -408,17 +408,17 @@ class RegistrationListPage {
                                 Text(this.reg5Name)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.reg5Meta)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 6)
 
                                 Text(this.reg5Email)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                             }
                             .width(100.percent)
                             .padding(16)
@@ -435,6 +435,6 @@ class RegistrationListPage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

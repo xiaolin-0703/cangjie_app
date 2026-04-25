@@ -7,7 +7,6 @@ import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
 import ohos_app_cangjie_entry.service.CircleService
-import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -39,12 +38,12 @@ class CreatePostPage {
 
     func getImageButtonText(): String {
         if (this.uploadingImage) {
-            return "图片上传中..."
+            return "图片处理中..."
         }
         if (this.imagePreviewUri != "") {
-            return "重新选择图片"
+            return "更新图片预览"
         }
-        return "从相册选择图片"
+        return "应用图片链接"
     }
 
     func getCircleHintText(): String {
@@ -65,8 +64,8 @@ class CreatePostPage {
             return false
         }
 
-        if (this.content == "" && this.imageUrl == "") {
-            this.errorMsg = "帖子内容或图片至少填写一项"
+        if (this.content == "") {
+            this.errorMsg = "帖子内容不能为空"
             return false
         }
 
@@ -81,22 +80,13 @@ class CreatePostPage {
     func choosePostImage() {
         this.errorMsg = ""
         this.successMsg = ""
-        this.uploadingImage = true
-        ImageUploadService.pickAndUploadImage(
-            { localUri: String =>
-                this.imagePreviewUri = localUri
-            },
-            { uploadedUrl: String =>
-                this.imageUrl = uploadedUrl
-                this.imagePreviewUri = uploadedUrl
-                this.uploadingImage = false
-            },
-            { msg: String =>
-                this.errorMsg = msg
-                this.imagePreviewUri = this.imageUrl
-                this.uploadingImage = false
-            }
-        )
+
+        if (this.imageUrl == "") {
+            this.errorMsg = "请先粘贴帖子图片链接"
+            return
+        }
+
+        this.imagePreviewUri = this.imageUrl
     }
 
     func submitPost() {
@@ -109,7 +99,7 @@ class CreatePostPage {
 
         this.submitting = true
 
-        CircleService.createPost(
+        CircleService.createPostWithImage(
             this.circleId,
             this.title,
             this.content,
@@ -137,18 +127,18 @@ class CreatePostPage {
                         Text("发布帖子")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text(this.getCircleHintText())
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("发帖")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -161,7 +151,7 @@ class CreatePostPage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ _: ClickEvent =>
@@ -171,7 +161,7 @@ class CreatePostPage {
                     Button("返回圈子")
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .onClick({ _: ClickEvent =>
@@ -182,20 +172,20 @@ class CreatePostPage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
                     Column {
                         Text("帖子标题")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 8)
 
                         TextInput(placeholder: "输入帖子标题")
                             .width(100.percent)
                             .height(44)
-                            .backgroundColor(0xFFF4F5F7)
+                            .backgroundColor(0xFFF7FAFF)
                             .borderRadius(16)
                             .margin(bottom: 16)
                             .onChange({ v: String =>
@@ -204,13 +194,13 @@ class CreatePostPage {
 
                         Text("帖子内容")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 8)
 
                         TextInput(placeholder: "分享你的想法、活动、提问或招募信息")
                             .width(100.percent)
                             .height(120)
-                            .backgroundColor(0xFFF4F5F7)
+                            .backgroundColor(0xFFF7FAFF)
                             .borderRadius(16)
                             .margin(bottom: 16)
                             .onChange({ v: String =>
@@ -219,15 +209,30 @@ class CreatePostPage {
 
                         Text("帖子图片")
                             .fontSize(14)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 8)
+
+                        TextInput(placeholder: "粘贴帖子图片链接")
+                            .width(100.percent)
+                            .height(44)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
+                            .margin(bottom: 12)
+                            .onChange({ v: String =>
+                                this.imageUrl = v
+                                if (v != "") {
+                                    this.imagePreviewUri = v
+                                } else {
+                                    this.imagePreviewUri = ""
+                                }
+                            })
 
                         Button(this.getImageButtonText())
                             .width(100.percent)
                             .height(44)
                             .enabled(!this.uploadingImage && !this.submitting)
-                            .backgroundColor(0xFFFFF1EA)
-                            .fontColor(0xFFFF7A45)
+                            .backgroundColor(0xFFEAF2FF)
+                            .fontColor(0xFF2F80FF)
                             .borderRadius(16)
                             .margin(bottom: 12)
                             .onClick({ _: ClickEvent =>
@@ -245,7 +250,7 @@ class CreatePostPage {
                         if (this.errorMsg != "") {
                             Text(this.errorMsg)
                                 .fontSize(14)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                                 .margin(bottom: 12)
                         }
 
@@ -260,7 +265,7 @@ class CreatePostPage {
                             .width(100.percent)
                             .height(44)
                             .enabled(!this.submitting && !this.uploadingImage)
-                            .backgroundColor(0xFFFF7A45)
+                            .backgroundColor(0xFF2F80FF)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(18)
                             .margin(bottom: 12)
@@ -272,8 +277,8 @@ class CreatePostPage {
                             Button("返回圈子详情")
                                 .width(100.percent)
                                 .height(44)
-                                .backgroundColor(0xFFFFF1EA)
-                                .fontColor(0xFFFF7A45)
+                                .backgroundColor(0xFFEAF2FF)
+                                .fontColor(0xFF2F80FF)
                                 .borderRadius(18)
                                 .onClick({ _: ClickEvent =>
                                     Router.push(url: "CircleDetailPage")
@@ -292,6 +297,6 @@ class CreatePostPage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

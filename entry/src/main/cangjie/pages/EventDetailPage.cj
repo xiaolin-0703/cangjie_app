@@ -53,18 +53,18 @@ class EventDetailPage {
                         Text("活动详情")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text("查看活动信息，决定是否报名参加")
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("详情")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -77,7 +77,7 @@ class EventDetailPage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ =>
@@ -87,7 +87,7 @@ class EventDetailPage {
                     Button("发起活动")
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .onClick({ =>
@@ -98,7 +98,7 @@ class EventDetailPage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
@@ -108,24 +108,24 @@ class EventDetailPage {
                                 Text(this.title)
                                     .fontSize(22)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 8)
 
                                 Text(this.timeText)
                                     .fontSize(14)
-                                    .fontColor(0xFF666666)
+                                    .fontColor(0xFF6D7B99)
                                     .margin(bottom: 4)
 
                                 Text(this.location)
                                     .fontSize(14)
-                                    .fontColor(0xFF666666)
+                                    .fontColor(0xFF6D7B99)
                             }
                             .layoutWeight(1)
 
                             Text("活动")
                                 .fontSize(11)
                                 .fontColor(0xFFFFFFFF)
-                                .backgroundColor(0xFFFF7A45)
+                                .backgroundColor(0xFF2F80FF)
                                 .padding(left: 10, right: 10, top: 6, bottom: 6)
                                 .borderRadius(12)
                         }
@@ -134,33 +134,33 @@ class EventDetailPage {
 
                         Text(this.statusText)
                             .fontSize(12)
-                            .fontColor(0xFFFF7A45)
+                            .fontColor(0xFF2F80FF)
                             .margin(bottom: 16)
 
                         Row {
                             Column {
                                 Text("人数上限")
                                     .fontSize(12)
-                                    .fontColor(0xFF999999)
+                                    .fontColor(0xFF9AA6BD)
                                     .margin(bottom: 6)
 
                                 Text(this.capacityText)
                                     .fontSize(16)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                             }
                             .layoutWeight(1)
 
                             Column {
                                 Text("报名截止")
                                     .fontSize(12)
-                                    .fontColor(0xFF999999)
+                                    .fontColor(0xFF9AA6BD)
                                     .margin(bottom: 6)
 
                                 Text(this.deadlineText)
                                     .fontSize(16)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                             }
                             .layoutWeight(1)
                         }
@@ -170,12 +170,12 @@ class EventDetailPage {
                         Text("活动介绍")
                             .fontSize(18)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 10)
 
                         Text(this.description)
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                             .lineHeight(22)
                             .margin(bottom: 20)
 
@@ -183,7 +183,7 @@ class EventDetailPage {
                             .width(100.percent)
                             .height(42)
                             .enabled(!this.loading && !this.registerSuccess)
-                            .backgroundColor(0xFFFF7A45)
+                            .backgroundColor(0xFF2F80FF)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(14)
                             .onClick({ =>
@@ -215,15 +215,15 @@ class EventDetailPage {
                     .borderRadius(18)
                     .margin(bottom: 12)
                     Button("查看报名名单")
-    .width(100.percent)
-    .height(42)
-    .backgroundColor(0xFFFFF1EA)
-    .fontColor(0xFFFF7A45)
-    .borderRadius(14)
-    .margin(top: 12)
-    .onClick({ =>
-        Router.push(url: "RegistrationListPage")
-    })
+                        .width(100.percent)
+                        .height(42)
+                        .backgroundColor(0xFFEAF2FF)
+                        .fontColor(0xFF2F80FF)
+                        .borderRadius(14)
+                        .margin(top: 12)
+                        .onClick({ =>
+                            Router.push(url: "RegistrationListPage")
+                        })
 
                     if (this.registerSuccess) {
                         Column {
@@ -235,7 +235,7 @@ class EventDetailPage {
 
                             Text("你已经成功报名这个活动，后续可以在活动广场查看。")
                                 .fontSize(13)
-                                .fontColor(0xFF666666)
+                                .fontColor(0xFF6D7B99)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -249,12 +249,12 @@ class EventDetailPage {
                             Text("操作失败")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -270,6 +270,6 @@ class EventDetailPage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

@@ -15,8 +15,44 @@ public class LoginPage {
     @State var email: String = ""
     @State var code: String = ""
     @State var errorMsg: String = ""
+    @State var successMsg: String = ""
     @State var sending: Bool = false
     @State var verifying: Bool = false
+    @State var loginReady: Bool = false
+    @State var nextPageTarget: String = ""
+
+    func resetLoginResult() {
+        this.loginReady = false
+        this.nextPageTarget = ""
+        this.successMsg = ""
+    }
+
+    func getLoginButtonText(): String {
+        if (this.loginReady) {
+            if (this.nextPageTarget == "HomePage") {
+                return "进入主页"
+            }
+            return "完善资料"
+        }
+        if (this.verifying) {
+            return "验证中..."
+        }
+        return "登录 / 注册"
+    }
+
+    func goNextPage() {
+        if (this.nextPageTarget == "") {
+            this.errorMsg = "跳转页面缺失"
+            return
+        }
+
+        try {
+            Router.push(url: this.nextPageTarget)
+            this.isShow = false
+        } catch (e: Exception) {
+            this.errorMsg = "跳转失败"
+        }
+    }
 
     func build() {
         Column {
@@ -35,14 +71,20 @@ public class LoginPage {
                 .width(85.percent)
                 .height(48)
                 .margin(bottom: 16)
-                .onChange({ v: String => this.email = v })
+                .onChange({ v: String =>
+                    this.email = v
+                    this.resetLoginResult()
+                })
 
             // 输入验证码 & 获取验证码
             Row {
                 TextInput(placeholder: "输入验证码")
                     .width(55.percent)
                     .height(48)
-                    .onChange({ v: String => this.code = v })
+                    .onChange({ v: String =>
+                        this.code = v
+                        this.resetLoginResult()
+                    })
 
                 Blank()
 
@@ -57,36 +99,59 @@ public class LoginPage {
                             this.errorMsg = "请先输入校园邮箱"
                             return
                         }
+                        this.errorMsg = ""
+                        this.resetLoginResult()
                         this.sending = true
-                        AuthService.sendCode(this.email, { _: String => this.sending = false }, { msg: String => this.errorMsg = msg; this.sending = false })
+                        AuthService.sendCode(
+                            this.email,
+                            { _: String =>
+                                this.successMsg = "验证码已发送，请查看邮箱"
+                                this.sending = false
+                            },
+                            { msg: String =>
+                                this.errorMsg = msg
+                                this.sending = false
+                            }
+                        )
                     })
             }
             .width(85.percent)
             .margin(bottom: 32)
 
             // 登录 / 注册按钮
-            Button(if (this.verifying) { "验证中..." } else { "登录 / 注册" })
+            Button(this.getLoginButtonText())
                 .width(85.percent)
                 .height(48)
                 .backgroundColor(0xFF0055FF)
                 .fontColor(0xFFFFFFFF)
                 .enabled(!this.verifying)
                 .onClick({ event: ClickEvent =>
+                    if (this.loginReady) {
+                        this.goNextPage()
+                        return
+                    }
+
                     if (this.email == "" || this.code == "") {
                         this.errorMsg = "请完整填写邮箱和验证码"
                         return
                     }
                     this.verifying = true
+                    this.errorMsg = ""
+                    this.successMsg = ""
                     AuthService.verify(this.email, this.code, { nextPage: String =>
                         this.verifying = false
-                        this.isShow = false // 验证成功，自动收起弹窗
-                        let target = if (nextPage == "home") { "HomePage" } else { "ProfileSetupPage" }
-                        try { Router.push(url: target) } catch (e: Exception) { this.errorMsg = "跳转失败" }
+                        this.nextPageTarget = if (nextPage == "home") { "HomePage" } else { "ProfileSetupPage" }
+                        this.loginReady = true
+                        this.successMsg = "验证成功，请继续"
                     }, { msg: String => this.errorMsg = msg; this.verifying = false })
                 })
 
+            if (this.successMsg != "") {
+                Text(this.successMsg).fontColor(0xFF2E9B4B).margin(top: 16)
+            }
+
             if (this.errorMsg != "") {
-                Text(this.errorMsg).fontColor(0xFFFF0000).margin(top: 16)
+                Text(this.errorMsg).fontColor(0xFFE96B6B).margin(top: 16)
             }
         }
         .width(100.percent)

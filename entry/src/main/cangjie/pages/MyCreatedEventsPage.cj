@@ -240,18 +240,18 @@ class MyCreatedEventsPage {
                         Text("我发起的活动")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text("查看你创建的活动，以及当前报名人数")
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("我的")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -264,7 +264,7 @@ class MyCreatedEventsPage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ =>
@@ -274,7 +274,7 @@ class MyCreatedEventsPage {
                     Button("发起活动")
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .onClick({ =>
@@ -285,7 +285,7 @@ class MyCreatedEventsPage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
@@ -293,12 +293,12 @@ class MyCreatedEventsPage {
                         Text("我的活动")
                             .fontSize(20)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
 
                         Button(this.getRefreshButtonText())
                             .height(32)
-                            .backgroundColor(0xFFFFF1EA)
-                            .fontColor(0xFFFF7A45)
+                            .backgroundColor(0xFFEAF2FF)
+                            .fontColor(0xFF2F80FF)
                             .borderRadius(16)
                             .enabled(!this.loading)
                             .onClick({ =>
@@ -315,12 +315,12 @@ class MyCreatedEventsPage {
                             Text("加载失败")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -334,12 +334,12 @@ class MyCreatedEventsPage {
                             Text("正在加载活动...")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 10)
 
                             Text("稍等一下，你创建的活动马上就来。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                         }
                         .width(100.percent)
                         .padding(18)
@@ -351,18 +351,18 @@ class MyCreatedEventsPage {
                             Text("你还没有创建活动")
                                 .fontSize(20)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 10)
 
                             Text("去发起你的第一个活动吧。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                                 .margin(bottom: 16)
 
                             Button("去发起活动")
                                 .width(100.percent)
                                 .height(42)
-                                .backgroundColor(0xFFFF7A45)
+                                .backgroundColor(0xFF2F80FF)
                                 .fontColor(0xFFFFFFFF)
                                 .borderRadius(14)
                                 .onClick({ =>
@@ -382,24 +382,24 @@ class MyCreatedEventsPage {
                                         Text(this.event1Title)
                                             .fontSize(18)
                                             .fontWeight(FontWeight.Bold)
-                                            .fontColor(0xFF222222)
+                                            .fontColor(0xFF24324A)
                                             .margin(bottom: 8)
 
                                         Text(this.event1Time)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                             .margin(bottom: 4)
 
                                         Text(this.event1Location)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                     }
                                     .layoutWeight(1)
 
                                     Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .padding(left: 10, right: 10, top: 6, bottom: 6)
                                         .borderRadius(12)
                                 }
@@ -408,18 +408,18 @@ class MyCreatedEventsPage {
 
                                 Text(this.event1Status)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                                     .margin(bottom: 6)
 
                                 Text(this.event1RegisteredText)
                                     .fontSize(12)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
                                     .width(100.percent)
                                     .height(42)
-                                    .backgroundColor(0xFFFF7A45)
+                                    .backgroundColor(0xFF2F80FF)
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
@@ -449,24 +449,24 @@ class MyCreatedEventsPage {
                                         Text(this.event2Title)
                                             .fontSize(18)
                                             .fontWeight(FontWeight.Bold)
-                                            .fontColor(0xFF222222)
+                                            .fontColor(0xFF24324A)
                                             .margin(bottom: 8)
 
                                         Text(this.event2Time)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                             .margin(bottom: 4)
 
                                         Text(this.event2Location)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                     }
                                     .layoutWeight(1)
 
                                     Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .padding(left: 10, right: 10, top: 6, bottom: 6)
                                         .borderRadius(12)
                                 }
@@ -475,18 +475,18 @@ class MyCreatedEventsPage {
 
                                 Text(this.event2Status)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                                     .margin(bottom: 6)
 
                                 Text(this.event2RegisteredText)
                                     .fontSize(12)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
                                     .width(100.percent)
                                     .height(42)
-                                    .backgroundColor(0xFFFF7A45)
+                                    .backgroundColor(0xFF2F80FF)
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
@@ -516,24 +516,24 @@ class MyCreatedEventsPage {
                                         Text(this.event3Title)
                                             .fontSize(18)
                                             .fontWeight(FontWeight.Bold)
-                                            .fontColor(0xFF222222)
+                                            .fontColor(0xFF24324A)
                                             .margin(bottom: 8)
 
                                         Text(this.event3Time)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                             .margin(bottom: 4)
 
                                         Text(this.event3Location)
                                             .fontSize(13)
-                                            .fontColor(0xFF666666)
+                                            .fontColor(0xFF6D7B99)
                                     }
                                     .layoutWeight(1)
 
                                     Text("我发起的")
                                         .fontSize(11)
                                         .fontColor(0xFFFFFFFF)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .padding(left: 10, right: 10, top: 6, bottom: 6)
                                         .borderRadius(12)
                                 }
@@ -542,18 +542,18 @@ class MyCreatedEventsPage {
 
                                 Text(this.event3Status)
                                     .fontSize(12)
-                                    .fontColor(0xFFFF7A45)
+                                    .fontColor(0xFF2F80FF)
                                     .margin(bottom: 6)
 
                                 Text(this.event3RegisteredText)
                                     .fontSize(12)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                                     .margin(bottom: 14)
 
                                 Button("查看详情")
                                     .width(100.percent)
                                     .height(42)
-                                    .backgroundColor(0xFFFF7A45)
+                                    .backgroundColor(0xFF2F80FF)
                                     .fontColor(0xFFFFFFFF)
                                     .borderRadius(14)
                                     .onClick({ =>
@@ -584,6 +584,6 @@ class MyCreatedEventsPage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }
