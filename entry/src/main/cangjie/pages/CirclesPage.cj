@@ -255,12 +255,12 @@ class CirclesPage {
                             Text("加载失败")
                                 .fontSize(17)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFE24D4D)
+                                .fontColor(0xFFE96B6B)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -424,7 +424,7 @@ class CirclesPage {
                                         }
                                         .width(54)
                                         .height(54)
-                                        .backgroundColor(0xFFFFB36A)
+                                        .backgroundColor(0xFF8BB6FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -489,7 +489,7 @@ class CirclesPage {
                                         }
                                         .width(54)
                                         .height(54)
-                                        .backgroundColor(0xFF78C58B)
+                                        .backgroundColor(0xFF7FAEFF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -554,7 +554,7 @@ class CirclesPage {
                                         }
                                         .width(54)
                                         .height(54)
-                                        .backgroundColor(0xFFBE92FF)
+                                        .backgroundColor(0xFF6CA3FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -619,7 +619,7 @@ class CirclesPage {
                                         }
                                         .width(54)
                                         .height(54)
-                                        .backgroundColor(0xFF59B7C9)
+                                        .backgroundColor(0xFF5A96FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -854,7 +854,7 @@ class CirclesPage {
                                         }
                                         .width(58)
                                         .height(58)
-                                        .backgroundColor(0xFFFFB36A)
+                                        .backgroundColor(0xFF8BB6FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -900,21 +900,21 @@ class CirclesPage {
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFFFF1D8)
+                                        .backgroundColor(0xFFEAF2FF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFFFE3BE)
+                                        .backgroundColor(0xFFDDEBFF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFFFD59F)
+                                        .backgroundColor(0xFFDDEBFF)
                                         .borderRadius(12)
                                 }
                                 .width(100.percent)
@@ -952,7 +952,7 @@ class CirclesPage {
                                         }
                                         .width(58)
                                         .height(58)
-                                        .backgroundColor(0xFF78C58B)
+                                        .backgroundColor(0xFF7FAEFF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -998,21 +998,21 @@ class CirclesPage {
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFDDF5E2)
+                                        .backgroundColor(0xFFEAF2FF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFC7ECCE)
+                                        .backgroundColor(0xFFDDEBFF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFB0E1BA)
+                                        .backgroundColor(0xFFC9DFFF)
                                         .borderRadius(12)
                                 }
                                 .width(100.percent)
@@ -1050,7 +1050,7 @@ class CirclesPage {
                                         }
                                         .width(58)
                                         .height(58)
-                                        .backgroundColor(0xFFBE92FF)
+                                        .backgroundColor(0xFF6CA3FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -1096,21 +1096,21 @@ class CirclesPage {
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFF0E5FF)
+                                        .backgroundColor(0xFFEAF2FF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFE3D2FF)
+                                        .backgroundColor(0xFFDDEBFF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFD6BFFF)
+                                        .backgroundColor(0xFFC9DFFF)
                                         .borderRadius(12)
                                 }
                                 .width(100.percent)
@@ -1148,7 +1148,7 @@ class CirclesPage {
                                         }
                                         .width(58)
                                         .height(58)
-                                        .backgroundColor(0xFF59B7C9)
+                                        .backgroundColor(0xFF5A96FF)
                                         .borderRadius(14)
                                         .justifyContent(FlexAlign.Center)
                                         .alignItems(HorizontalAlign.Center)
@@ -1194,21 +1194,21 @@ class CirclesPage {
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFD7F2F7)
+                                        .backgroundColor(0xFFEAF2FF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFC0EAF1)
+                                        .backgroundColor(0xFFDDEBFF)
                                         .borderRadius(12)
                                         .margin(right: 6)
 
                                     Column { }
                                         .layoutWeight(1)
                                         .height(80)
-                                        .backgroundColor(0xFFA9E1EA)
+                                        .backgroundColor(0xFFC9DFFF)
                                         .borderRadius(12)
                                 }
                                 .width(100.percent)
@@ -1313,6 +1313,6 @@ class CirclesPage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF5F7FB)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

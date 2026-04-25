@@ -7,7 +7,6 @@ import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
 import ohos_app_cangjie_entry.service.UserService
-import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -22,7 +21,6 @@ class ProfileSetupPage {
     @State var saving: Bool = false
     @State var uploadingAvatar: Bool = false
 
-    // 🌟 新增：控制页面是否展示“成功状态”的标志位
     @State var isSuccess: Bool = false
 
     func validate(): Bool {
@@ -71,179 +69,299 @@ class ProfileSetupPage {
 
     func getAvatarButtonText(): String {
         if (this.uploadingAvatar) {
-            return "头像上传中..."
+            return "头像处理中..."
         }
-        return "从相册选择头像"
+        return "应用头像链接"
     }
 
     func chooseAvatar() {
         this.errorMsg = ""
-        this.uploadingAvatar = true
-        ImageUploadService.pickAndUploadImage(
-            { localUri: String =>
-                this.avatarPreviewUri = localUri
-            },
-            { imageUrl: String =>
-                this.avatarUrl = imageUrl
-                this.avatarPreviewUri = imageUrl
-                this.uploadingAvatar = false
-            },
-            { msg: String =>
-                this.errorMsg = msg
-                this.avatarPreviewUri = this.avatarUrl
-                this.uploadingAvatar = false
-            }
-        )
+
+        if (this.avatarUrl == "") {
+            this.errorMsg = "请先粘贴头像图片链接"
+            return
+        }
+
+        this.avatarPreviewUri = this.avatarUrl
     }
 
     func build() {
         Column {
             if (this.isSuccess) {
-                // ==================== 成功状态视图（安全跳转区） ====================
-                Text("✓ 资料保存成功！")
-                    .fontSize(24)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor(0xFF00AA00)
-                    .margin(bottom: 32)
+                Column {
+                    Text("资料保存成功")
+                        .fontSize(24)
+                        .fontWeight(FontWeight.Bold)
+                        .fontColor(0xFF24324A)
+                        .margin(bottom: 8)
 
-                Button("进入主页")
-                    .width(85.percent)
-                    .onClick({ =>
-                        // 🌟 纯正的 UI 主线程同步点击，绝对安全！
-                        try {
-                            Router.push(url: "HomePage")
-                        } catch (e: Exception) {
-                            this.errorMsg = "跳转失败，请检查 main_pages.json 是否注册了 HomePage"
-                            this.isSuccess = false // 退回表单页显示错误
-                        }
-                    })
-
-                if (this.errorMsg != "") {
-                    Text(this.errorMsg)
-                        .fontColor(0xFFFF0000)
-                        .margin(top: 16)
-                }
-            } else {
-                // ==================== 原始表单视图 ====================
-                Text("完善资料")
-                    .fontSize(28)
-                    .fontWeight(FontWeight.Bold)
-                    .margin(bottom: 12)
-
-                Text("首次登录请先完善基础信息")
-                    .fontSize(14)
-                    .fontColor(0xFF888888)
-                    .margin(bottom: 32)
-
-                TextInput(placeholder: "请输入昵称")
-                    .width(85.percent)
-                    .margin(bottom: 16)
-                    .onChange({ val: String =>
-                        this.nickname = val
-                    })
-
-                TextInput(placeholder: "请输入年级，例如：2023级")
-                    .width(85.percent)
-                    .margin(bottom: 16)
-                    .onChange({ val: String =>
-                        this.grade = val
-                    })
-
-                TextInput(placeholder: "请输入院系，例如：计算机学院")
-                    .width(85.percent)
-                    .margin(bottom: 16)
-                    .onChange({ val: String =>
-                        this.department = val
-                    })
-
-                Button(this.getAvatarButtonText())
-                    .width(85.percent)
-                    .enabled(!this.uploadingAvatar)
-                    .margin(bottom: 12)
-                    .onClick({ =>
-                        this.chooseAvatar()
-                    })
-
-                if (this.avatarPreviewUri != "") {
-                    Image(this.avatarPreviewUri)
-                        .width(84)
-                        .height(84)
-                        .borderRadius(42)
+                    Text("你的校园身份已经准备好了")
+                        .fontSize(14)
+                        .fontColor(0xFF6D7B99)
                         .margin(bottom: 24)
-                } else {
-                    Text("未设置头像")
-                        .width(85.percent)
-                        .fontSize(13)
-                        .fontColor(0xFF888888)
-                        .margin(bottom: 24)
-                }
 
-                Text("默认身份模式")
-                    .width(85.percent)
-                    .fontSize(16)
-                    .margin(bottom: 12)
-
-                Row {
-                    Button(this.getRealModeText())
-                        .width(40.percent)
-                        .margin(right: 12)
+                    Button("进入主页")
+                        .width(100.percent)
+                        .height(44)
+                        .backgroundColor(0xFF2F80FF)
+                        .fontColor(0xFFFFFFFF)
+                        .borderRadius(18)
                         .onClick({ =>
-                            this.mode = "real"
-                        })
-
-                    Button(this.getAnonymousModeText())
-                        .width(40.percent)
-                        .onClick({ =>
-                            this.mode = "anonymous"
-                        })
-                }
-                .width(85.percent)
-                .margin(bottom: 16)
-
-                Text(this.getModeHintText())
-                    .width(85.percent)
-                    .fontSize(13)
-                    .fontColor(0xFF888888)
-                    .margin(bottom: 24)
-
-                if (this.errorMsg != "") {
-                    Text(this.errorMsg)
-                        .width(85.percent)
-                        .fontColor(0xFFFF0000)
-                        .margin(bottom: 16)
-                }
-
-                Button(this.getSaveButtonText())
-                    .width(85.percent)
-                    .enabled(!this.saving && !this.uploadingAvatar)
-                    .onClick({ =>
-                        this.errorMsg = ""
-                        if (!this.validate()) {
-                            return
-                        }
-
-                        this.saving = true
-                        UserService.updateProfile(
-                            this.nickname,
-                            this.grade,
-                            this.department,
-                            this.avatarUrl,
-                            this.mode,
-                            { nextPage: String =>
-                                // 🌟 核心改动：异步回调里只改状态，绝不写 Router.push
-                                this.saving = false
-                                this.isSuccess = true
-                            },
-                            { msg: String =>
-                                this.errorMsg = msg
-                                this.saving = false
+                            try {
+                                Router.push(url: "HomePage")
+                            } catch (e: Exception) {
+                                this.errorMsg = "跳转失败，请检查 main_pages.json 是否注册了 HomePage"
+                                this.isSuccess = false
                             }
-                        )
-                    })
+                        })
+
+                    if (this.errorMsg != "") {
+                        Text(this.errorMsg)
+                            .fontSize(13)
+                            .fontColor(0xFFE96B6B)
+                            .margin(top: 16)
+                    }
+                }
+                .width(100.percent)
+                .padding(20)
+                .backgroundColor(0xFFFFFFFF)
+                .borderRadius(22)
+                .margin(left: 16, right: 16)
+            } else {
+                Column {
+                    Row {
+                        Column {
+                            Text("完善资料")
+                                .fontSize(28)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF24324A)
+                                .margin(bottom: 6)
+
+                            Text("首次登录请先补全你的校园身份")
+                                .fontSize(14)
+                                .fontColor(0xFF6D7B99)
+                        }
+                        .layoutWeight(1)
+
+                        Text("资料")
+                            .fontSize(13)
+                            .fontColor(0xFF2F80FF)
+                            .backgroundColor(0xFFFFFFFF)
+                            .padding(left: 14, right: 14, top: 8, bottom: 8)
+                            .borderRadius(18)
+                    }
+                    .width(100.percent)
+                }
+                .width(100.percent)
+                .padding(left: 16, right: 16, top: 24, bottom: 20)
+                .backgroundColor(0xFFEAF2FF)
+
+                Scroll {
+                    Column {
+                        Column {
+                            Text("昵称")
+                                .fontSize(14)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            TextInput(placeholder: "请输入昵称")
+                                .width(100.percent)
+                                .height(44)
+                                .backgroundColor(0xFFF7FAFF)
+                                .borderRadius(16)
+                                .margin(bottom: 16)
+                                .onChange({ val: String =>
+                                    this.nickname = val
+                                })
+
+                            Text("年级")
+                                .fontSize(14)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            TextInput(placeholder: "例如：2023级")
+                                .width(100.percent)
+                                .height(44)
+                                .backgroundColor(0xFFF7FAFF)
+                                .borderRadius(16)
+                                .margin(bottom: 16)
+                                .onChange({ val: String =>
+                                    this.grade = val
+                                })
+
+                            Text("院系")
+                                .fontSize(14)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            TextInput(placeholder: "例如：计算机学院")
+                                .width(100.percent)
+                                .height(44)
+                                .backgroundColor(0xFFF7FAFF)
+                                .borderRadius(16)
+                                .margin(bottom: 16)
+                                .onChange({ val: String =>
+                                    this.department = val
+                                })
+
+                            Text("头像")
+                                .fontSize(14)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            TextInput(placeholder: "粘贴头像图片链接")
+                                .width(100.percent)
+                                .height(44)
+                                .backgroundColor(0xFFF7FAFF)
+                                .borderRadius(16)
+                                .margin(bottom: 12)
+                                .onChange({ val: String =>
+                                    this.avatarUrl = val
+                                    if (val != "") {
+                                        this.avatarPreviewUri = val
+                                    } else {
+                                        this.avatarPreviewUri = ""
+                                    }
+                                })
+
+                            Button(this.getAvatarButtonText())
+                                .width(100.percent)
+                                .height(44)
+                                .enabled(!this.uploadingAvatar)
+                                .backgroundColor(0xFFEAF2FF)
+                                .fontColor(0xFF2F80FF)
+                                .borderRadius(16)
+                                .margin(bottom: 12)
+                                .onClick({ =>
+                                    this.chooseAvatar()
+                                })
+
+                            if (this.avatarPreviewUri != "") {
+                                Image(this.avatarPreviewUri)
+                                    .width(84)
+                                    .height(84)
+                                    .borderRadius(42)
+                                    .margin(bottom: 18)
+                            } else {
+                                Text("未设置头像")
+                                    .fontSize(13)
+                                    .fontColor(0xFF7E8CA8)
+                                    .margin(bottom: 18)
+                            }
+
+                            Text("默认身份模式")
+                                .fontSize(14)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 10)
+
+                            if (this.mode == "real") {
+                                Row {
+                                    Button(this.getRealModeText())
+                                        .layoutWeight(1)
+                                        .height(40)
+                                        .backgroundColor(0xFF2F80FF)
+                                        .fontColor(0xFFFFFFFF)
+                                        .borderRadius(20)
+                                        .margin(right: 8)
+                                        .onClick({ =>
+                                            this.mode = "real"
+                                        })
+
+                                    Button(this.getAnonymousModeText())
+                                        .layoutWeight(1)
+                                        .height(40)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .fontColor(0xFF2F80FF)
+                                        .borderRadius(20)
+                                        .onClick({ =>
+                                            this.mode = "anonymous"
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+                            } else {
+                                Row {
+                                    Button(this.getRealModeText())
+                                        .layoutWeight(1)
+                                        .height(40)
+                                        .backgroundColor(0xFFEAF2FF)
+                                        .fontColor(0xFF2F80FF)
+                                        .borderRadius(20)
+                                        .margin(right: 8)
+                                        .onClick({ =>
+                                            this.mode = "real"
+                                        })
+
+                                    Button(this.getAnonymousModeText())
+                                        .layoutWeight(1)
+                                        .height(40)
+                                        .backgroundColor(0xFF2F80FF)
+                                        .fontColor(0xFFFFFFFF)
+                                        .borderRadius(20)
+                                        .onClick({ =>
+                                            this.mode = "anonymous"
+                                        })
+                                }
+                                .width(100.percent)
+                                .margin(bottom: 12)
+                            }
+
+                            Text(this.getModeHintText())
+                                .fontSize(13)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 18)
+
+                            if (this.errorMsg != "") {
+                                Text(this.errorMsg)
+                                    .fontSize(14)
+                                    .fontColor(0xFFE96B6B)
+                                    .margin(bottom: 14)
+                            }
+
+                            Button(this.getSaveButtonText())
+                                .width(100.percent)
+                                .height(44)
+                                .enabled(!this.saving && !this.uploadingAvatar)
+                                .backgroundColor(0xFF2F80FF)
+                                .fontColor(0xFFFFFFFF)
+                                .borderRadius(18)
+                                .onClick({ =>
+                                    this.errorMsg = ""
+                                    if (!this.validate()) {
+                                        return
+                                    }
+
+                                    this.saving = true
+                                    UserService.updateProfile(
+                                        this.nickname,
+                                        this.grade,
+                                        this.department,
+                                        this.avatarUrl,
+                                        this.mode,
+                                        { nextPage: String =>
+                                            this.saving = false
+                                            this.isSuccess = true
+                                        },
+                                        { msg: String =>
+                                            this.errorMsg = msg
+                                            this.saving = false
+                                        }
+                                    )
+                                })
+                        }
+                        .width(100.percent)
+                        .padding(18)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(20)
+                    }
+                    .width(100.percent)
+                    .padding(left: 16, right: 16, top: 16, bottom: 24)
+                }
+                .layoutWeight(1)
             }
         }
         .width(100.percent)
         .height(100.percent)
-        .justifyContent(FlexAlign.Center)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

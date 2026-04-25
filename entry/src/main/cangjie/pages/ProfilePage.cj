@@ -9,7 +9,6 @@ import ohos.router.*
 import ohos_app_cangjie_entry.common.ApiConfig
 import ohos_app_cangjie_entry.service.UserService
 import ohos_app_cangjie_entry.service.EventService
-import ohos_app_cangjie_entry.service.ImageUploadService
 
 @Entry
 @Component
@@ -192,7 +191,7 @@ class ProfilePage {
         let finalAvatarUrl = this.pickValue(this.inputAvatarUrl, this.avatarUrl)
         let finalBio = this.pickValue(this.inputBio, this.bio)
 
-        UserService.updateMyProfile(
+        UserService.updateMyProfileWithAvatar(
             finalNickname,
             finalGrade,
             finalDepartment,
@@ -203,6 +202,7 @@ class ProfilePage {
                 this.grade = finalGrade
                 this.department = finalDepartment
                 this.avatarUrl = finalAvatarUrl
+                this.avatarPreviewUri = finalAvatarUrl
                 this.bio = finalBio
 
                 this.inputNickname = ""
@@ -223,31 +223,22 @@ class ProfilePage {
 
     func getAvatarButtonText(): String {
         if (this.uploadingAvatar) {
-            return "头像上传中..."
+            return "头像处理中..."
         }
-        return "从相册更换头像"
+        return "应用头像链接"
     }
 
     func chooseAvatar() {
         this.errorMsg = ""
         this.successMsg = ""
-        this.uploadingAvatar = true
-        ImageUploadService.pickAndUploadImage(
-            { localUri: String =>
-                this.avatarPreviewUri = localUri
-            },
-            { imageUrl: String =>
-                this.avatarUrl = imageUrl
-                this.avatarPreviewUri = imageUrl
-                this.inputAvatarUrl = imageUrl
-                this.uploadingAvatar = false
-                this.successMsg = "头像已上传，点击保存资料后生效"
-            },
-            { msg: String =>
-                this.errorMsg = msg
-                this.uploadingAvatar = false
-            }
-        )
+
+        if (this.inputAvatarUrl == "") {
+            this.errorMsg = "请先粘贴头像图片链接"
+            return
+        }
+
+        this.avatarPreviewUri = this.inputAvatarUrl
+        this.successMsg = "头像链接已应用，点击保存资料后生效"
     }
 
     func goToEventDetail(eventId: String, title: String, timeText: String, location: String, statusText: String) {
@@ -272,18 +263,18 @@ class ProfilePage {
                         Text("个人中心")
                             .fontSize(28)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 6)
 
                         Text("查看并修改你的资料，以及你报名的活动")
                             .fontSize(14)
-                            .fontColor(0xFF666666)
+                            .fontColor(0xFF6D7B99)
                     }
                     .layoutWeight(1)
 
                     Text("我的")
                         .fontSize(13)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .backgroundColor(0xFFFFFFFF)
                         .padding(left: 14, right: 14, top: 8, bottom: 8)
                         .borderRadius(18)
@@ -296,7 +287,7 @@ class ProfilePage {
                         .layoutWeight(1)
                         .height(40)
                         .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFFFF7A45)
+                        .fontColor(0xFF2F80FF)
                         .borderRadius(20)
                         .margin(right: 8)
                         .onClick({ =>
@@ -306,7 +297,7 @@ class ProfilePage {
                     Button("退出登录")
                         .layoutWeight(1)
                         .height(40)
-                        .backgroundColor(0xFFFF7A45)
+                        .backgroundColor(0xFF2F80FF)
                         .fontColor(0xFFFFFFFF)
                         .borderRadius(20)
                         .onClick({ =>
@@ -318,7 +309,7 @@ class ProfilePage {
             }
             .width(100.percent)
             .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFFFF3EE)
+            .backgroundColor(0xFFEAF2FF)
 
             Scroll {
                 Column {
@@ -327,12 +318,12 @@ class ProfilePage {
                             Text("正在加载个人资料...")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text("稍等一下，你的资料和活动马上就来。")
                                 .fontSize(13)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                         }
                         .width(100.percent)
                         .padding(18)
@@ -346,12 +337,12 @@ class ProfilePage {
                             Text("操作失败")
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 8)
 
                             Text(this.errorMsg)
                                 .fontSize(13)
-                                .fontColor(0xFFFF0000)
+                                .fontColor(0xFFE96B6B)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -370,7 +361,7 @@ class ProfilePage {
 
                             Text(this.successMsg)
                                 .fontSize(13)
-                                .fontColor(0xFF666666)
+                                .fontColor(0xFF6D7B99)
                         }
                         .width(100.percent)
                         .padding(16)
@@ -383,7 +374,7 @@ class ProfilePage {
                         Text("基本资料")
                             .fontSize(20)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 14)
 
                         Row {
@@ -398,8 +389,8 @@ class ProfilePage {
                                     .width(72)
                                     .height(72)
                                     .fontSize(16)
-                                    .fontColor(0xFFFF7A45)
-                                    .backgroundColor(0xFFFFF1EA)
+                                    .fontColor(0xFF2F80FF)
+                                    .backgroundColor(0xFFEAF2FF)
                                     .borderRadius(36)
                                     .margin(right: 14)
                             }
@@ -408,12 +399,12 @@ class ProfilePage {
                                 Text(this.nickname)
                                     .fontSize(18)
                                     .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF222222)
+                                    .fontColor(0xFF24324A)
                                     .margin(bottom: 6)
 
                                 Text(this.department)
                                     .fontSize(13)
-                                    .fontColor(0xFF777777)
+                                    .fontColor(0xFF7E8CA8)
                             }
                             .layoutWeight(1)
                         }
@@ -422,26 +413,29 @@ class ProfilePage {
 
                         Text("校园邮箱")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         Text(this.email)
                             .fontSize(14)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 16)
 
                         Text("当前昵称")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         Text(this.nickname)
                             .fontSize(14)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 12)
 
                         TextInput(placeholder: "输入新昵称")
                             .width(100.percent)
+                            .height(44)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
                             .margin(bottom: 14)
                             .onChange({ v: String =>
                                 this.inputNickname = v
@@ -449,16 +443,19 @@ class ProfilePage {
 
                         Text("当前年级")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         Text(this.grade)
                             .fontSize(14)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 12)
 
                         TextInput(placeholder: "输入新年级")
                             .width(100.percent)
+                            .height(44)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
                             .margin(bottom: 14)
                             .onChange({ v: String =>
                                 this.inputGrade = v
@@ -466,16 +463,19 @@ class ProfilePage {
 
                         Text("当前院系")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         Text(this.department)
                             .fontSize(14)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 12)
 
                         TextInput(placeholder: "输入新院系")
                             .width(100.percent)
+                            .height(44)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
                             .margin(bottom: 14)
                             .onChange({ v: String =>
                                 this.inputDepartment = v
@@ -483,27 +483,42 @@ class ProfilePage {
 
                         Text("当前头像")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         if (this.avatarUrl != "") {
                             Text("已设置头像")
                                 .fontSize(14)
-                                .fontColor(0xFF222222)
+                                .fontColor(0xFF24324A)
                                 .margin(bottom: 12)
                         } else {
                             Text("未设置头像")
                                 .fontSize(14)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                                 .margin(bottom: 12)
                         }
+
+                        TextInput(placeholder: "粘贴头像图片链接")
+                            .width(100.percent)
+                            .height(44)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
+                            .margin(bottom: 12)
+                            .onChange({ v: String =>
+                                this.inputAvatarUrl = v
+                                if (v != "") {
+                                    this.avatarPreviewUri = v
+                                } else {
+                                    this.avatarPreviewUri = this.avatarUrl
+                                }
+                            })
 
                         Button(this.getAvatarButtonText())
                             .width(100.percent)
                             .height(42)
                             .enabled(!this.uploadingAvatar && !this.saving)
-                            .backgroundColor(0xFFFFF1EA)
-                            .fontColor(0xFFFF7A45)
+                            .backgroundColor(0xFFEAF2FF)
+                            .fontColor(0xFF2F80FF)
                             .borderRadius(14)
                             .margin(bottom: 14)
                             .onClick({ =>
@@ -512,16 +527,19 @@ class ProfilePage {
 
                         Text("当前简介")
                             .fontSize(13)
-                            .fontColor(0xFF777777)
+                            .fontColor(0xFF7E8CA8)
                             .margin(bottom: 6)
 
                         Text(this.bio)
                             .fontSize(14)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 12)
 
                         TextInput(placeholder: "输入新简介")
                             .width(100.percent)
+                            .height(72)
+                            .backgroundColor(0xFFF7FAFF)
+                            .borderRadius(16)
                             .margin(bottom: 16)
                             .onChange({ v: String =>
                                 this.inputBio = v
@@ -531,7 +549,7 @@ class ProfilePage {
                             .width(100.percent)
                             .height(42)
                             .enabled(!this.saving && !this.uploadingAvatar)
-                            .backgroundColor(0xFFFF7A45)
+                            .backgroundColor(0xFF2F80FF)
                             .fontColor(0xFFFFFFFF)
                             .borderRadius(14)
                             .onClick({ =>
@@ -548,41 +566,41 @@ class ProfilePage {
                         Text("我报名的活动")
                             .fontSize(20)
                             .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF222222)
+                            .fontColor(0xFF24324A)
                             .margin(bottom: 14)
 
                         if (!this.hasAnyJoinedEvent()) {
                             Text("你暂时还没有报名活动")
                                 .fontSize(14)
-                                .fontColor(0xFF777777)
+                                .fontColor(0xFF7E8CA8)
                         } else {
                             if (this.joined1Title != "") {
                                 Column {
                                     Text(this.joined1Title)
                                         .fontSize(18)
                                         .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF222222)
+                                        .fontColor(0xFF24324A)
                                         .margin(bottom: 8)
 
                                     Text(this.joined1Time)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 4)
 
                                     Text(this.joined1Location)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 8)
 
                                     Text(this.joined1Status)
                                         .fontSize(12)
-                                        .fontColor(0xFFFF7A45)
+                                        .fontColor(0xFF2F80FF)
                                         .margin(bottom: 12)
 
                                     Button("查看详情")
                                         .width(100.percent)
                                         .height(42)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .fontColor(0xFFFFFFFF)
                                         .borderRadius(14)
                                         .onClick({ =>
@@ -597,7 +615,7 @@ class ProfilePage {
                                 }
                                 .width(100.percent)
                                 .padding(16)
-                                .backgroundColor(0xFFF7F8FA)
+                                .backgroundColor(0xFFF4F8FF)
                                 .borderRadius(18)
                                 .margin(bottom: 12)
                             }
@@ -607,28 +625,28 @@ class ProfilePage {
                                     Text(this.joined2Title)
                                         .fontSize(18)
                                         .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF222222)
+                                        .fontColor(0xFF24324A)
                                         .margin(bottom: 8)
 
                                     Text(this.joined2Time)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 4)
 
                                     Text(this.joined2Location)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 8)
 
                                     Text(this.joined2Status)
                                         .fontSize(12)
-                                        .fontColor(0xFFFF7A45)
+                                        .fontColor(0xFF2F80FF)
                                         .margin(bottom: 12)
 
                                     Button("查看详情")
                                         .width(100.percent)
                                         .height(42)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .fontColor(0xFFFFFFFF)
                                         .borderRadius(14)
                                         .onClick({ =>
@@ -643,7 +661,7 @@ class ProfilePage {
                                 }
                                 .width(100.percent)
                                 .padding(16)
-                                .backgroundColor(0xFFF7F8FA)
+                                .backgroundColor(0xFFF4F8FF)
                                 .borderRadius(18)
                                 .margin(bottom: 12)
                             }
@@ -653,28 +671,28 @@ class ProfilePage {
                                     Text(this.joined3Title)
                                         .fontSize(18)
                                         .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF222222)
+                                        .fontColor(0xFF24324A)
                                         .margin(bottom: 8)
 
                                     Text(this.joined3Time)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 4)
 
                                     Text(this.joined3Location)
                                         .fontSize(13)
-                                        .fontColor(0xFF666666)
+                                        .fontColor(0xFF6D7B99)
                                         .margin(bottom: 8)
 
                                     Text(this.joined3Status)
                                         .fontSize(12)
-                                        .fontColor(0xFFFF7A45)
+                                        .fontColor(0xFF2F80FF)
                                         .margin(bottom: 12)
 
                                     Button("查看详情")
                                         .width(100.percent)
                                         .height(42)
-                                        .backgroundColor(0xFFFF7A45)
+                                        .backgroundColor(0xFF2F80FF)
                                         .fontColor(0xFFFFFFFF)
                                         .borderRadius(14)
                                         .onClick({ =>
@@ -689,7 +707,7 @@ class ProfilePage {
                                 }
                                 .width(100.percent)
                                 .padding(16)
-                                .backgroundColor(0xFFF7F8FA)
+                                .backgroundColor(0xFFF4F8FF)
                                 .borderRadius(18)
                                 .margin(bottom: 12)
                             }
@@ -708,6 +726,6 @@ class ProfilePage {
         }
         .width(100.percent)
         .height(100.percent)
-        .backgroundColor(0xFFF7F8FA)
+        .backgroundColor(0xFFF4F8FF)
     }
 }

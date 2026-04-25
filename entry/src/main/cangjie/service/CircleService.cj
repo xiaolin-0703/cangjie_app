@@ -11,6 +11,12 @@ public class CircleService {
     private static var currentCircleDescription: String = ""
     private static var currentCircleMemberText: String = ""
     private static var currentCircleJoinedText: String = "false"
+    private static var currentMemberUserId: String = ""
+    private static var currentMemberNickname: String = ""
+    private static var currentMemberAvatarUrl: String = ""
+    private static var currentMemberTagText: String = ""
+    private static var currentMemberHobbies: String = ""
+    private static var currentMemberRole: String = ""
 
     public static func setCurrentCircleDetail(
         circleId: String,
@@ -52,6 +58,46 @@ public class CircleService {
         CircleService.currentCircleDescription = ""
         CircleService.currentCircleMemberText = ""
         CircleService.currentCircleJoinedText = "false"
+    }
+
+    public static func setCurrentMemberProfile(
+        userId: String,
+        nickname: String,
+        avatarUrl: String,
+        tagText: String,
+        hobbies: String,
+        role: String
+    ): Unit {
+        CircleService.currentMemberUserId = userId
+        CircleService.currentMemberNickname = nickname
+        CircleService.currentMemberAvatarUrl = avatarUrl
+        CircleService.currentMemberTagText = tagText
+        CircleService.currentMemberHobbies = hobbies
+        CircleService.currentMemberRole = role
+    }
+
+    public static func getCurrentMemberUserId(): String {
+        return CircleService.currentMemberUserId
+    }
+
+    public static func getCurrentMemberNickname(): String {
+        return CircleService.currentMemberNickname
+    }
+
+    public static func getCurrentMemberAvatarUrl(): String {
+        return CircleService.currentMemberAvatarUrl
+    }
+
+    public static func getCurrentMemberTagText(): String {
+        return CircleService.currentMemberTagText
+    }
+
+    public static func getCurrentMemberHobbies(): String {
+        return CircleService.currentMemberHobbies
+    }
+
+    public static func getCurrentMemberRole(): String {
+        return CircleService.currentMemberRole
     }
 
     public static func formatMemberText(raw: String): String {
@@ -381,6 +427,59 @@ public class CircleService {
         }, options: option)
     }
 
+    public static func getCircleMembers(
+        circleId: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        if (circleId == "") {
+            onError("圈子 ID 不能为空")
+            return
+        }
+
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.GET,
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/circles/${circleId}/members", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("获取圈子成员失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("获取圈子成员失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("获取圈子成员失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
     public static func getCirclePosts(
         circleId: String,
         onSuccess: (String) -> Unit,
@@ -434,6 +533,53 @@ public class CircleService {
         }, options: option)
     }
 
+    public static func getLatestPosts(
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.GET,
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/latest", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("获取最新帖子失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("获取最新帖子失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("获取最新帖子失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
     public static func createPost(
         circleId: String,
         title: String,
@@ -465,6 +611,79 @@ public class CircleService {
         let body =
             "{\"title\":\"${title}\"," +
             "\"content\":\"${content}\"}"
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            extraData: HttpData.STRING_DATA(body),
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("content-type", "application/json"),
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/circles/${circleId}/posts", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("发布帖子失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("发布帖子失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("发布帖子失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
+    public static func createPostWithImage(
+        circleId: String,
+        title: String,
+        content: String,
+        imageUrl: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        if (circleId == "") {
+            onError("圈子 ID 不能为空")
+            return
+        }
+
+        if (title == "") {
+            onError("帖子标题不能为空")
+            return
+        }
+
+        if (content == "") {
+            onError("帖子内容不能为空")
+            return
+        }
+
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let body =
+            "{\"title\":\"${title}\"," +
+            "\"content\":\"${content}\"," +
+            "\"imageUrl\":\"${imageUrl}\"}"
 
         let httpRequest = createHttp()
         let option = HttpRequestOptions(
@@ -654,6 +873,73 @@ public class CircleService {
         let objectRaw = objectParts[index + 1]
 
         if (key == "id") {
+            let commaParts = objectRaw.split(",")
+            if (commaParts.size < 1) {
+                return ""
+            }
+            return commaParts[0]
+        }
+
+        let stringMarker = "\"${key}\":\""
+        if (objectRaw.contains(stringMarker)) {
+            let valueParts = objectRaw.split(stringMarker)
+            if (valueParts.size < 2) {
+                return ""
+            }
+
+            let tailValue = valueParts[1]
+            let finalParts = tailValue.split("\"")
+            if (finalParts.size < 1) {
+                return ""
+            }
+
+            return finalParts[0]
+        }
+
+        let numberMarker = "\"${key}\":"
+        if (objectRaw.contains(numberMarker)) {
+            let valueParts = objectRaw.split(numberMarker)
+            if (valueParts.size < 2) {
+                return ""
+            }
+
+            let tailValue = valueParts[1]
+            let commaParts = tailValue.split(",")
+            if (commaParts.size < 1) {
+                return ""
+            }
+
+            let rawValue = commaParts[0]
+            if (rawValue == "null") {
+                return ""
+            }
+
+            return rawValue
+        }
+
+        return ""
+    }
+
+    public static func extractMemberField(raw: String, index: Int64, key: String): String {
+        let listMarker = "\"members\":["
+        if (!raw.contains(listMarker)) {
+            return ""
+        }
+
+        let listParts = raw.split(listMarker)
+        if (listParts.size < 2) {
+            return ""
+        }
+
+        let tail = listParts[1]
+        let objectParts = tail.split("\"userId\":")
+        if (objectParts.size < index + 2) {
+            return ""
+        }
+
+        let objectRaw = objectParts[index + 1]
+
+        if (key == "userId") {
             let commaParts = objectRaw.split(",")
             if (commaParts.size < 1) {
                 return ""

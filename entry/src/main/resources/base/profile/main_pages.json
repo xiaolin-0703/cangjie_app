@@ -12,6 +12,7 @@
     "pages/ProfilePage",
     "pages/CirclesPage",
     "pages/CircleDetailPage",
+    "pages/MemberProfilePage",
     "pages/CreatePostPage",
     "pages/CreateCirclePage"
   ]

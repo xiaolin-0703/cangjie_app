@@ -64,6 +64,13 @@ public class AuthService {
             let raw = r.result.toString()
             match (r.responseCode) {
                 case ResponseCode.OK =>
+                    let debugCode = ApiConfig.extractJsonString(raw, "debugCode")
+                    if (debugCode != "") {
+                        onError("后端邮件服务未配置，验证码只在后端控制台输出。请配置 SMTP 后再获取验证码。")
+                        httpRequest.destroy()
+                        return
+                    }
+
                     let serverEmail = ApiConfig.extractJsonString(raw, "email")
                     if (serverEmail == "") {
                         onSuccess(email)
