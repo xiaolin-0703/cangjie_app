@@ -70,7 +70,7 @@ public class CircleService {
     ): Unit {
         CircleService.currentMemberUserId = userId
         CircleService.currentMemberNickname = nickname
-        CircleService.currentMemberAvatarUrl = avatarUrl
+        CircleService.currentMemberAvatarUrl = ApiConfig.normalizeImageUrl(avatarUrl)
         CircleService.currentMemberTagText = tagText
         CircleService.currentMemberHobbies = hobbies
         CircleService.currentMemberRole = role
@@ -680,10 +680,11 @@ public class CircleService {
             return
         }
 
+        let safeImageUrl = ApiConfig.normalizeImageUrl(imageUrl)
         let body =
             "{\"title\":\"${title}\"," +
             "\"content\":\"${content}\"," +
-            "\"imageUrl\":\"${imageUrl}\"}"
+            "\"imageUrl\":\"${safeImageUrl}\"}"
 
         let httpRequest = createHttp()
         let option = HttpRequestOptions(
@@ -764,7 +765,11 @@ public class CircleService {
                 return ""
             }
 
-            return finalParts[0]
+            let value = finalParts[0]
+            if (key == "imageUrl" || key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
         }
 
         let numberMarker = "\"${key}\":"
@@ -821,7 +826,11 @@ public class CircleService {
                 return ""
             }
 
-            return finalParts[0]
+            let value = finalParts[0]
+            if (key == "imageUrl" || key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
         }
 
         let numberMarker = "\"${key}\":"
@@ -893,7 +902,11 @@ public class CircleService {
                 return ""
             }
 
-            return finalParts[0]
+            let value = finalParts[0]
+            if (key == "imageUrl" || key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
         }
 
         let numberMarker = "\"${key}\":"
@@ -960,7 +973,11 @@ public class CircleService {
                 return ""
             }
 
-            return finalParts[0]
+            let value = finalParts[0]
+            if (key == "imageUrl" || key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
         }
 
         let numberMarker = "\"${key}\":"

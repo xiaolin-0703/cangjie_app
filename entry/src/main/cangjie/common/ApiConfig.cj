@@ -16,6 +16,42 @@ public class ApiConfig {
         ApiConfig.accessToken = ""
     }
 
+    public static func normalizeImageUrl(rawUrl: String): String {
+        var url = rawUrl.replace("\r", "").replace("\n", "")
+        while (url.startsWith(" ")) {
+            let parts = url.split(" ", 2)
+            if (parts.size < 2) {
+                return ""
+            }
+            url = parts[1]
+        }
+
+        if (url == "") {
+            return ""
+        }
+
+        if (url.startsWith("//")) {
+            return "http:" + url
+        }
+
+        if (url.startsWith("/")) {
+            return ApiConfig.BASE_URL + url
+        }
+
+        if (url.startsWith("uploads/")) {
+            return ApiConfig.BASE_URL + "/" + url
+        }
+
+        if (url.contains("/uploads/images/")) {
+            let parts = url.split("/uploads/images/", 2)
+            if (parts.size >= 2) {
+                return ApiConfig.BASE_URL + "/uploads/images/" + parts[1]
+            }
+        }
+
+        return url
+    }
+
     public static func extractJsonString(raw: String, key: String): String {
         let marker = "\"${key}\":\""
         if (!raw.contains(marker)) {

@@ -6,6 +6,7 @@ import ohos.component.*
 import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
+import ohos_app_cangjie_entry.common.ApiConfig
 import ohos_app_cangjie_entry.service.CircleService
 
 @Entry
@@ -86,7 +87,9 @@ class CreatePostPage {
             return
         }
 
-        this.imagePreviewUri = this.imageUrl
+        let safeUrl = ApiConfig.normalizeImageUrl(this.imageUrl)
+        this.imageUrl = safeUrl
+        this.imagePreviewUri = safeUrl
     }
 
     func submitPost() {
@@ -219,9 +222,10 @@ class CreatePostPage {
                             .borderRadius(16)
                             .margin(bottom: 12)
                             .onChange({ v: String =>
-                                this.imageUrl = v
-                                if (v != "") {
-                                    this.imagePreviewUri = v
+                                let safeUrl = ApiConfig.normalizeImageUrl(v)
+                                this.imageUrl = safeUrl
+                                if (safeUrl != "") {
+                                    this.imagePreviewUri = safeUrl
                                 } else {
                                     this.imagePreviewUri = ""
                                 }

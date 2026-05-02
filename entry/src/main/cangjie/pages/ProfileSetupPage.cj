@@ -6,6 +6,7 @@ import ohos.component.*
 import ohos.state_manage.*
 import ohos.state_macro_manage.*
 import ohos.router.*
+import ohos_app_cangjie_entry.common.ApiConfig
 import ohos_app_cangjie_entry.service.UserService
 
 @Entry
@@ -82,7 +83,9 @@ class ProfileSetupPage {
             return
         }
 
-        this.avatarPreviewUri = this.avatarUrl
+        let safeUrl = ApiConfig.normalizeImageUrl(this.avatarUrl)
+        this.avatarUrl = safeUrl
+        this.avatarPreviewUri = safeUrl
     }
 
     func build() {
@@ -216,9 +219,10 @@ class ProfileSetupPage {
                                 .borderRadius(16)
                                 .margin(bottom: 12)
                                 .onChange({ val: String =>
-                                    this.avatarUrl = val
-                                    if (val != "") {
-                                        this.avatarPreviewUri = val
+                                    let safeUrl = ApiConfig.normalizeImageUrl(val)
+                                    this.avatarUrl = safeUrl
+                                    if (safeUrl != "") {
+                                        this.avatarPreviewUri = safeUrl
                                     } else {
                                         this.avatarPreviewUri = ""
                                     }
