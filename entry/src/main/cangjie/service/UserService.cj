@@ -137,11 +137,12 @@ public class UserService {
         return
     }
 
+    let safeAvatarUrl = ApiConfig.normalizeImageUrl(avatarUrl)
     let body =
         "{\"nickname\":\"${nickname}\"," +
         "\"grade\":\"${grade}\"," +
         "\"department\":\"${department}\"," +
-        "\"avatarUrl\":\"${avatarUrl}\"," +
+        "\"avatarUrl\":\"${safeAvatarUrl}\"," +
         "\"bio\":\"${bio}\"}"
 
     let httpRequest = createHttp()
@@ -244,7 +245,11 @@ public class UserService {
                 return ""
             }
 
-            return finalParts[0]
+            let value = finalParts[0]
+            if (key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
         }
 
         let numberMarker = "\"${key}\":"
@@ -357,11 +362,12 @@ public class UserService {
         return
     }
 
+    let safeAvatarUrl = ApiConfig.normalizeImageUrl(avatarUrl)
     let body =
         "{\"nickname\":\"${nickname}\"," +
         "\"grade\":\"${grade}\"," +
         "\"department\":\"${department}\"," +
-        "\"avatarUrl\":\"${avatarUrl}\"," +
+        "\"avatarUrl\":\"${safeAvatarUrl}\"," +
         "\"identityMode\":\"${mode}\"}"
 
     let httpRequest = createHttp()

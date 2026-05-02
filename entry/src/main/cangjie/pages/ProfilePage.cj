@@ -188,7 +188,7 @@ class ProfilePage {
         let finalNickname = this.pickValue(this.inputNickname, this.nickname)
         let finalGrade = this.pickValue(this.inputGrade, this.grade)
         let finalDepartment = this.pickValue(this.inputDepartment, this.department)
-        let finalAvatarUrl = this.pickValue(this.inputAvatarUrl, this.avatarUrl)
+        let finalAvatarUrl = ApiConfig.normalizeImageUrl(this.pickValue(this.inputAvatarUrl, this.avatarUrl))
         let finalBio = this.pickValue(this.inputBio, this.bio)
 
         UserService.updateMyProfileWithAvatar(
@@ -237,7 +237,9 @@ class ProfilePage {
             return
         }
 
-        this.avatarPreviewUri = this.inputAvatarUrl
+        let safeUrl = ApiConfig.normalizeImageUrl(this.inputAvatarUrl)
+        this.inputAvatarUrl = safeUrl
+        this.avatarPreviewUri = safeUrl
         this.successMsg = "头像链接已应用，点击保存资料后生效"
     }
 
@@ -505,9 +507,10 @@ class ProfilePage {
                             .borderRadius(16)
                             .margin(bottom: 12)
                             .onChange({ v: String =>
-                                this.inputAvatarUrl = v
-                                if (v != "") {
-                                    this.avatarPreviewUri = v
+                                let safeUrl = ApiConfig.normalizeImageUrl(v)
+                                this.inputAvatarUrl = safeUrl
+                                if (safeUrl != "") {
+                                    this.avatarPreviewUri = safeUrl
                                 } else {
                                     this.avatarPreviewUri = this.avatarUrl
                                 }
