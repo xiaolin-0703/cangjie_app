@@ -5,20 +5,33 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_3GzoTFltmrZDR4lUV_FGDNhJT8wChFh-nBKcsWDm3C8=.cer",
+          "certpath": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B40CB89249FB23C7F601951F5E25899A399EEFA59A84B278817BDC260B267075C790F7EA014D70C",
-          "profile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_3GzoTFltmrZDR4lUV_FGDNhJT8wChFh-nBKcsWDm3C8=.p7b",
+          "keyPassword": "0000001B3F9F4DB56027CEB85B99CFB49947EFF055CECA13D624C895ECE09F9A136137A527D8F385650877",
+          "profile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_3GzoTFltmrZDR4lUV_FGDNhJT8wChFh-nBKcsWDm3C8=.p12",
-          "storePassword": "0000001BE4659B26D21EB8153E1A4CAE10D61411996D5C4178FBA81698B7F09561F98FD8FA5B615870B2D0"
+          "storeFile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.p12",
+          "storePassword": "0000001B3123A77E6539188584E3AF1D8F39AF70794F838A858C12D6DDB518743D7AD301F34CAFF4EE6EC5"
+        }
+      },
+      {
+        "name": "app",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B3F9F4DB56027CEB85B99CFB49947EFF055CECA13D624C895ECE09F9A136137A527D8F385650877",
+          "profile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Lenovo\\.ohos\\config\\default_final_hw_JtBVGiLPszVxjbA6z5dKGw_Y-6D91zgsp0dWO5UG6QI=.p12",
+          "storePassword": "0000001B3123A77E6539188584E3AF1D8F39AF70794F838A858C12D6DDB518743D7AD301F34CAFF4EE6EC5"
         }
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "app",
         "targetSdkVersion": "5.0.5(17)",
         "compatibleSdkVersion": "5.0.5(17)",
         "runtimeOS": "HarmonyOS",

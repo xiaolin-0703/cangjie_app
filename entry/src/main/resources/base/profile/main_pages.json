@@ -14,6 +14,7 @@
     "pages/CircleDetailPage",
     "pages/MemberProfilePage",
     "pages/CreatePostPage",
-    "pages/CreateCirclePage"
+    "pages/CreateCirclePage",
+    "pages/PostDetailPage"
   ]
 }

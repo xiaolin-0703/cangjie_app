@@ -495,4 +495,50 @@ public static func getCurrentEventCapacityText(): String {
 public static func getCurrentEventDeadlineText(): String {
     return currentEventDeadlineText
 }
+
+    // === 必须添加：向后端发送讨论的真实接口 ===
+    public static func addDiscussion(
+        eventId: String,
+        content: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let body = "{\"content\":\"${content}\"}"
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            extraData: HttpData.STRING_DATA(body),
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("content-type", "application/json"),
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        // 调用真实接口（假设你们后端的路径是 /events/{id}/discussions，如果不对后端会返回错误，但前端 UI 依然能瞬间看到发送的内容）
+        httpRequest.request("${ApiConfig.BASE_URL}/events/${eventId}/discussions", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("网络异常，部分功能可能受限")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK => onSuccess(raw)
+                    case _ => onError("发送失败")
+                }
+            } else {
+                onError("发送失败")
+            }
+            httpRequest.destroy()
+        }, options: option)
+    }
 }

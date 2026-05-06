@@ -60,6 +60,7 @@ class EntryView {
                 .width(85.percent)
                 .height(48)
                 .fontColor(0xFFFFFFFF)
+                .backgroundColor(0xFF4169E1)
                 .borderRadius(24)
                 .margin(bottom: 24)
                 .onClick({ =>
@@ -71,7 +72,7 @@ class EntryView {
                 Checkbox(name: "agreement")
                     .width(14)
                     .height(14)
-                    .selectedColor(0xFF0055FF)
+                    .selectedColor(0xFF4169E1)
                 Text("我已阅读并同意《用户协议》《隐私政策》")
                     .fontSize(12)
                     .fontColor(0xFFFFFFFF)

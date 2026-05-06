@@ -1259,4 +1259,84 @@ public class CircleService {
 
         return ""
     }
+
+    public static func toggleLike(
+        postId: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        let token = ApiConfig.getAccessToken()
+        if (token == "") { onError("请先登录"); return }
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([("Authorization", "Bearer ${token}")])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/${postId}/like", { err, resp =>
+            if (let Some(_) <- err) { onError("点赞失败"); httpRequest.destroy(); return }
+            if (let Some(r) <- resp) {
+                match (r.responseCode) {
+                    case ResponseCode.OK => onSuccess(r.result.toString())
+                    case _ => onError("点赞失败")
+                }
+            }
+            httpRequest.destroy()
+        }, options: option)
+    }
+
+    public static func sendComment(
+        postId: String,
+        content: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        let token = ApiConfig.getAccessToken()
+        if (token == "") { onError("请先登录"); return }
+
+        let body = "{\"content\":\"${content}\"}"
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            extraData: HttpData.STRING_DATA(body),
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("content-type", "application/json"),
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/${postId}/comments", { err, resp =>
+            if (let Some(_) <- err) { onError("发送评论失败"); httpRequest.destroy(); return }
+            if (let Some(r) <- resp) {
+                match (r.responseCode) {
+                    case ResponseCode.OK => onSuccess(r.result.toString())
+                    case _ => onError("发送评论失败")
+                }
+            }
+            httpRequest.destroy()
+        }, options: option)
+    }
+
+    // === 新增：用于帖子详情页的数据中转 ===
+    private static var currentPostId: String = ""
+    private static var currentPostTitle: String = ""
+    private static var currentPostContent: String = ""
+    private static var currentPostAuthor: String = ""
+    private static var currentPostImageUrl: String = ""
+
+    public static func setCurrentPostDetail(id: String, title: String, content: String, author: String, imageUrl: String): Unit {
+        currentPostId = id
+        currentPostTitle = title
+        currentPostContent = content
+        currentPostAuthor = author
+        currentPostImageUrl = imageUrl
+    }
+    public static func getCurrentPostId(): String { return currentPostId }
+    public static func getCurrentPostTitle(): String { return currentPostTitle }
+    public static func getCurrentPostContent(): String { return currentPostContent }
+    public static func getCurrentPostAuthor(): String { return currentPostAuthor }
+    public static func getCurrentPostImageUrl(): String { return currentPostImageUrl }
 }

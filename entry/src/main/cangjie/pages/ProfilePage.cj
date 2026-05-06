@@ -19,6 +19,8 @@ class ProfilePage {
     @State var errorMsg: String = ""
     @State var successMsg: String = ""
 
+    @State var isEditMode: Bool = false
+
     @State var nickname: String = ""
     @State var grade: String = ""
     @State var department: String = ""
@@ -66,18 +68,10 @@ class ProfilePage {
     }
 
     func normalizeStatusText(status: String): String {
-        if (status == "published") {
-            return "正在报名中"
-        }
-        if (status == "finished") {
-            return "已结束"
-        }
-        if (status == "cancelled") {
-            return "已取消"
-        }
-        if (status == "") {
-            return "状态待定"
-        }
+        if (status == "published") { return "正在报名中" }
+        if (status == "finished") { return "已结束" }
+        if (status == "cancelled") { return "已取消" }
+        if (status == "") { return "状态待定" }
         return status
     }
 
@@ -106,9 +100,7 @@ class ProfilePage {
     }
 
     func pickValue(newValue: String, oldValue: String): String {
-        if (newValue != "") {
-            return newValue
-        }
+        if (newValue != "") { return newValue }
         return oldValue
     }
 
@@ -129,25 +121,19 @@ class ProfilePage {
         this.joined1Title = UserService.extractEventField(raw, 0, "title")
         this.joined1Time = UserService.extractEventField(raw, 0, "startTimeText")
         this.joined1Location = UserService.extractEventField(raw, 0, "location")
-        this.joined1Status = this.normalizeStatusText(
-            UserService.extractEventField(raw, 0, "status")
-        )
+        this.joined1Status = this.normalizeStatusText(UserService.extractEventField(raw, 0, "status"))
 
         this.joined2Id = UserService.extractEventField(raw, 1, "id")
         this.joined2Title = UserService.extractEventField(raw, 1, "title")
         this.joined2Time = UserService.extractEventField(raw, 1, "startTimeText")
         this.joined2Location = UserService.extractEventField(raw, 1, "location")
-        this.joined2Status = this.normalizeStatusText(
-            UserService.extractEventField(raw, 1, "status")
-        )
+        this.joined2Status = this.normalizeStatusText(UserService.extractEventField(raw, 1, "status"))
 
         this.joined3Id = UserService.extractEventField(raw, 2, "id")
         this.joined3Title = UserService.extractEventField(raw, 2, "title")
         this.joined3Time = UserService.extractEventField(raw, 2, "startTimeText")
         this.joined3Location = UserService.extractEventField(raw, 2, "location")
-        this.joined3Status = this.normalizeStatusText(
-            UserService.extractEventField(raw, 2, "status")
-        )
+        this.joined3Status = this.normalizeStatusText(UserService.extractEventField(raw, 2, "status"))
     }
 
     func loadPageData() {
@@ -158,7 +144,6 @@ class ProfilePage {
         UserService.getMyProfile(
             { raw: String =>
                 this.fillProfile(raw)
-
                 UserService.getMyJoinedEvents(
                     { raw2: String =>
                         this.fillJoinedEvents(raw2)
@@ -192,11 +177,7 @@ class ProfilePage {
         let finalBio = this.pickValue(this.inputBio, this.bio)
 
         UserService.updateMyProfileWithAvatar(
-            finalNickname,
-            finalGrade,
-            finalDepartment,
-            finalAvatarUrl,
-            finalBio,
+            finalNickname, finalGrade, finalDepartment, finalAvatarUrl, finalBio,
             { _: String =>
                 this.nickname = finalNickname
                 this.grade = finalGrade
@@ -212,6 +193,7 @@ class ProfilePage {
                 this.inputBio = ""
 
                 this.saving = false
+                this.isEditMode = false // 保存成功后自动切回展示模式
                 this.successMsg = "资料已保存"
             },
             { msg: String =>
@@ -222,20 +204,18 @@ class ProfilePage {
     }
 
     func getAvatarButtonText(): String {
-        if (this.uploadingAvatar) {
-            return "头像处理中..."
-        }
-        return "应用头像链接"
+        if (this.uploadingAvatar) { return "头像处理中..." }
+        return "应用预览"
     }
 
     func chooseAvatar() {
         this.errorMsg = ""
         this.successMsg = ""
-
         if (this.inputAvatarUrl == "") {
             this.errorMsg = "请先粘贴头像图片链接"
             return
         }
+
 
         let safeUrl = ApiConfig.normalizeImageUrl(this.inputAvatarUrl)
         this.inputAvatarUrl = safeUrl
@@ -244,488 +224,247 @@ class ProfilePage {
     }
 
     func goToEventDetail(eventId: String, title: String, timeText: String, location: String, statusText: String) {
-        EventService.setCurrentEventDetail(
-            eventId,
-            title,
-            timeText,
-            location,
-            statusText,
-            "",
-            "",
-            ""
-        )
+        EventService.setCurrentEventDetail(eventId, title, timeText, location, statusText, "", "", "")
         Router.push(url: "EventDetailPage")
     }
 
     func build() {
         Column {
-            Column {
-                Row {
-                    Column {
-                        Text("个人中心")
-                            .fontSize(28)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 6)
-
-                        Text("查看并修改你的资料，以及你报名的活动")
-                            .fontSize(14)
-                            .fontColor(0xFF6D7B99)
-                    }
-                    .layoutWeight(1)
-
-                    Text("我的")
-                        .fontSize(13)
-                        .fontColor(0xFF2F80FF)
-                        .backgroundColor(0xFFFFFFFF)
-                        .padding(left: 14, right: 14, top: 8, bottom: 8)
-                        .borderRadius(18)
-                }
-                .width(100.percent)
-                .margin(bottom: 16)
-
-                Row {
-                    Button("返回首页")
-                        .layoutWeight(1)
-                        .height(40)
-                        .backgroundColor(0xFFFFFFFF)
-                        .fontColor(0xFF2F80FF)
-                        .borderRadius(20)
-                        .margin(right: 8)
-                        .onClick({ =>
-                            Router.push(url: "HomePage")
-                        })
-
-                    Button("退出登录")
-                        .layoutWeight(1)
-                        .height(40)
-                        .backgroundColor(0xFF2F80FF)
-                        .fontColor(0xFFFFFFFF)
-                        .borderRadius(20)
-                        .onClick({ =>
-                            ApiConfig.clearAccessToken()
-                            Router.push(url: "LoginPage")
-                        })
-                }
-                .width(100.percent)
+            Row {
+                Text("我的主页")
+                    .fontSize(22)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor(0xFF24324A)
             }
             .width(100.percent)
-            .padding(left: 16, right: 16, top: 24, bottom: 20)
-            .backgroundColor(0xFFEAF2FF)
+            .padding(left: 16, right: 16, top: 12, bottom: 8)
+            .backgroundColor(0xFFFFFFFF)
 
             Scroll {
                 Column {
-                    if (this.loading) {
-                        Column {
-                            Text("正在加载个人资料...")
-                                .fontSize(18)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF24324A)
-                                .margin(bottom: 8)
-
-                            Text("稍等一下，你的资料和活动马上就来。")
-                                .fontSize(13)
-                                .fontColor(0xFF7E8CA8)
-                        }
-                        .width(100.percent)
-                        .padding(18)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(bottom: 12)
+                    if (this.loading && !this.firstLoaded) {
+                        Text("正在加载数据...")
+                            .fontSize(13)
+                            .fontColor(0xFF9AA6BD)
+                            .margin(top: 20, bottom: 20)
                     }
 
                     if (this.errorMsg != "") {
-                        Column {
-                            Text("操作失败")
-                                .fontSize(18)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF24324A)
-                                .margin(bottom: 8)
-
-                            Text(this.errorMsg)
-                                .fontSize(13)
-                                .fontColor(0xFFE96B6B)
-                        }
-                        .width(100.percent)
-                        .padding(16)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(bottom: 12)
+                        Text(this.errorMsg)
+                            .fontSize(13)
+                            .fontColor(0xFFE96B6B)
+                            .padding(16)
                     }
 
                     if (this.successMsg != "") {
-                        Column {
-                            Text("保存成功")
-                                .fontSize(18)
-                                .fontWeight(FontWeight.Bold)
-                                .fontColor(0xFF2E9B4B)
-                                .margin(bottom: 8)
-
-                            Text(this.successMsg)
-                                .fontSize(13)
-                                .fontColor(0xFF6D7B99)
-                        }
-                        .width(100.percent)
-                        .padding(16)
-                        .backgroundColor(0xFFFFFFFF)
-                        .borderRadius(18)
-                        .margin(bottom: 12)
+                        Text(this.successMsg)
+                            .fontSize(13)
+                            .fontColor(0xFF2E9B4B)
+                            .padding(16)
                     }
 
-                    Column {
-                        Text("基本资料")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 14)
+                    if (this.isEditMode) {
+                        // --- 编辑模式 ---
+                        Column {
+                            Text("编辑资料")
+                                .fontSize(20)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF24324A)
+                                .margin(bottom: 20)
 
-                        Row {
                             if (this.avatarPreviewUri != "") {
-                                Image(this.avatarPreviewUri)
-                                    .width(72)
-                                    .height(72)
-                                    .borderRadius(36)
-                                    .margin(right: 14)
+                                Image(this.avatarPreviewUri).width(80).height(80).borderRadius(40).margin(bottom: 12)
                             } else {
-                                Text("头像")
-                                    .width(72)
-                                    .height(72)
-                                    .fontSize(16)
-                                    .fontColor(0xFF2F80FF)
-                                    .backgroundColor(0xFFEAF2FF)
-                                    .borderRadius(36)
-                                    .margin(right: 14)
+                                Text("头像").width(80).height(80).fontSize(16).fontColor(0xFF2F80FF).backgroundColor(0xFFEAF2FF).borderRadius(40).textAlign(TextAlign.Center).lineHeight(80).margin(bottom: 12)
                             }
 
-                            Column {
-                                Text(this.nickname)
-                                    .fontSize(18)
-                                    .fontWeight(FontWeight.Bold)
-                                    .fontColor(0xFF24324A)
-                                    .margin(bottom: 6)
+                            TextInput(placeholder: "头像链接 (留空保持原样)")
+                                .width(100.percent).height(44).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 8)
+                                .onChange({ v: String =>
+                                    this.inputAvatarUrl = v
+                                    this.avatarPreviewUri = if (v != "") { v } else { this.avatarUrl }
+                                })
 
-                                Text(this.department)
+                            Button(this.getAvatarButtonText())
+                                .width(100.percent).height(38).backgroundColor(0xFFEAF2FF).fontColor(0xFF2F80FF).borderRadius(12).margin(bottom: 16)
+                                .onClick({ _: ClickEvent => this.chooseAvatar() })
+
+                            TextInput(placeholder: "昵称：目前为 " + this.nickname)
+                                .width(100.percent).height(44).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 12)
+                                .onChange({ v: String => this.inputNickname = v })
+
+                            TextInput(placeholder: "年级：目前为 " + this.grade)
+                                .width(100.percent).height(44).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 12)
+                                .onChange({ v: String => this.inputGrade = v })
+
+                            TextInput(placeholder: "院系：目前为 " + this.department)
+                                .width(100.percent).height(44).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 12)
+                                .onChange({ v: String => this.inputDepartment = v })
+
+                            TextInput(placeholder: "个人简介...")
+                                .width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 20)
+                                .onChange({ v: String => this.inputBio = v })
+
+                            Button(this.getSaveButtonText())
+                                .width(100.percent).height(44).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12)
+                                .enabled(!this.saving)
+                                .onClick({ _: ClickEvent => this.saveProfile() })
+
+                            Button("取消编辑")
+                                .width(100.percent).height(44).backgroundColor(0xFFF1F4F8).fontColor(0xFF6D7B99).borderRadius(16).margin(bottom: 12)
+                                .onClick({ _: ClickEvent =>
+                                    this.isEditMode = false
+                                    this.avatarPreviewUri = this.avatarUrl
+                                })
+                            Button("退出登录")
+                                .width(100.percent).height(44).backgroundColor(0xFFFFEEEE).fontColor(0xFFE96B6B).borderRadius(16).margin(bottom: 12)
+                                .onClick({ _: ClickEvent =>
+                                    ApiConfig.clearAccessToken()
+                                    Router.push(url: "LoginPage")
+                                })
+                        }
+                        .width(100.percent)
+                        .padding(20)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(24)
+                        .margin(left: 12, right: 12, bottom: 16, top: 12)
+
+                    } else {
+                        Column {
+                            if (this.avatarUrl != "") {
+                                Image(this.avatarUrl).width(88).height(88).borderRadius(44).margin(bottom: 12)
+                            } else {
+                                Text("未设置").width(88).height(88).fontSize(16).fontColor(0xFF2F80FF).backgroundColor(0xFFEAF2FF).borderRadius(44).textAlign(TextAlign.Center).lineHeight(88).margin(bottom: 12)
+                            }
+
+                            Text(if (this.nickname != "") { this.nickname } else { "神秘同学" })
+                                .fontSize(24)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF24324A)
+                                .margin(bottom: 8)
+
+                            Row {
+                                if (this.department != "") {
+                                    Text(this.department)
+                                        .fontSize(12).fontColor(0xFF2F80FF).backgroundColor(0xFFEAF2FF).padding(left: 10, right: 10, top: 4, bottom: 4).borderRadius(12).margin(right: 8)
+                                }
+                                if (this.grade != "") {
+                                    Text(this.grade)
+                                        .fontSize(12).fontColor(0xFF2F80FF).backgroundColor(0xFFEAF2FF).padding(left: 10, right: 10, top: 4, bottom: 4).borderRadius(12)
+                                }
+                            }.margin(bottom: 16)
+
+                            Text(if (this.bio != "") { this.bio } else { "这个人很懒，还没有写简介。" })
+                                .fontSize(14)
+                                .fontColor(0xFF6D7B99)
+                                .margin(bottom: 8)
+
+                            Text(this.email)
+                                .fontSize(12)
+                                .fontColor(0xFF9AA6BD)
+                                .margin(bottom: 24)
+                            Button("编辑资料")
+                                .width(100.percent)
+                                .height(44)
+                                .backgroundColor(0xFF2F80FF)
+                                .fontColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .onClick({ _: ClickEvent =>
+                                    this.successMsg = ""
+                                    this.isEditMode = true
+                                })
+                        }
+                        .width(100.percent)
+                        .padding(24)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(24)
+                        .margin(left: 12, right: 12, bottom: 16, top: 12)
+                        .alignItems(HorizontalAlign.Center)
+
+                        Column {
+                            Text("我报名的活动")
+                                .fontSize(18)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF24324A)
+                                .margin(bottom: 14)
+
+                            if (!this.hasAnyJoinedEvent()) {
+                                Text("暂时还没有报名活动")
                                     .fontSize(13)
-                                    .fontColor(0xFF7E8CA8)
+                                    .fontColor(0xFF9AA6BD)
+                            } else {
+                                if (this.joined1Title != "") {
+                                    Column {
+                                        Text(this.joined1Title).fontSize(16).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 6)
+                                        Text(this.joined1Time + " · " + this.joined1Location).fontSize(12).fontColor(0xFF6D7B99).margin(bottom: 10)
+                                        Row {
+                                            Text(this.joined1Status).fontSize(11).fontColor(0xFF2F80FF)
+                                            Row().layoutWeight(1)
+                                            Text("查看详情").fontSize(12).fontColor(0xFF9AA6BD)
+                                        }.width(100.percent)
+                                    }.width(100.percent).padding(16).backgroundColor(0xFFF4F8FF).borderRadius(18).margin(bottom: 10)
+                                    .onClick({ _: ClickEvent => this.goToEventDetail(this.joined1Id, this.joined1Title, this.joined1Time, this.joined1Location, this.joined1Status) })
+                                }
+
+                                if (this.joined2Title != "") {
+                                    Column {
+                                        Text(this.joined2Title).fontSize(16).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 6)
+                                        Text(this.joined2Time + " · " + this.joined2Location).fontSize(12).fontColor(0xFF6D7B99).margin(bottom: 10)
+                                        Row {
+                                            Text(this.joined2Status).fontSize(11).fontColor(0xFF2F80FF)
+                                            Row().layoutWeight(1)
+                                            Text("查看详情").fontSize(12).fontColor(0xFF9AA6BD)
+                                        }.width(100.percent)
+                                    }.width(100.percent).padding(16).backgroundColor(0xFFF4F8FF).borderRadius(18).margin(bottom: 10)
+                                    .onClick({ _: ClickEvent => this.goToEventDetail(this.joined2Id, this.joined2Title, this.joined2Time, this.joined2Location, this.joined2Status) })
+                                }
+
+                                if (this.joined3Title != "") {
+                                    Column {
+                                        Text(this.joined3Title).fontSize(16).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 6)
+                                        Text(this.joined3Time + " · " + this.joined3Location).fontSize(12).fontColor(0xFF6D7B99).margin(bottom: 10)
+                                        Row {
+                                            Text(this.joined3Status).fontSize(11).fontColor(0xFF2F80FF)
+                                            Row().layoutWeight(1)
+                                            Text("查看详情").fontSize(12).fontColor(0xFF9AA6BD)
+                                        }.width(100.percent)
+                                    }.width(100.percent).padding(16).backgroundColor(0xFFF4F8FF).borderRadius(18).margin(bottom: 10)
+                                    .onClick({ _: ClickEvent => this.goToEventDetail(this.joined3Id, this.joined3Title, this.joined3Time, this.joined3Location, this.joined3Status) })
+                                }
                             }
-                            .layoutWeight(1)
                         }
                         .width(100.percent)
                         .margin(bottom: 18)
-
-                        Text("校园邮箱")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        Text(this.email)
-                            .fontSize(14)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 16)
-
-                        Text("当前昵称")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        Text(this.nickname)
-                            .fontSize(14)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 12)
-
-                        TextInput(placeholder: "输入新昵称")
-                            .width(100.percent)
-                            .height(44)
-                            .backgroundColor(0xFFF7FAFF)
-                            .borderRadius(16)
-                            .margin(bottom: 14)
-                            .onChange({ v: String =>
-                                this.inputNickname = v
-                            })
-
-                        Text("当前年级")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        Text(this.grade)
-                            .fontSize(14)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 12)
-
-                        TextInput(placeholder: "输入新年级")
-                            .width(100.percent)
-                            .height(44)
-                            .backgroundColor(0xFFF7FAFF)
-                            .borderRadius(16)
-                            .margin(bottom: 14)
-                            .onChange({ v: String =>
-                                this.inputGrade = v
-                            })
-
-                        Text("当前院系")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        Text(this.department)
-                            .fontSize(14)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 12)
-
-                        TextInput(placeholder: "输入新院系")
-                            .width(100.percent)
-                            .height(44)
-                            .backgroundColor(0xFFF7FAFF)
-                            .borderRadius(16)
-                            .margin(bottom: 14)
-                            .onChange({ v: String =>
-                                this.inputDepartment = v
-                            })
-
-                        Text("当前头像")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        if (this.avatarUrl != "") {
-                            Text("已设置头像")
-                                .fontSize(14)
-                                .fontColor(0xFF24324A)
-                                .margin(bottom: 12)
-                        } else {
-                            Text("未设置头像")
-                                .fontSize(14)
-                                .fontColor(0xFF7E8CA8)
-                                .margin(bottom: 12)
-                        }
-
-                        TextInput(placeholder: "粘贴头像图片链接")
-                            .width(100.percent)
-                            .height(44)
-                            .backgroundColor(0xFFF7FAFF)
-                            .borderRadius(16)
-                            .margin(bottom: 12)
-                            .onChange({ v: String =>
-                                let safeUrl = ApiConfig.normalizeImageUrl(v)
-                                this.inputAvatarUrl = safeUrl
-                                if (safeUrl != "") {
-                                    this.avatarPreviewUri = safeUrl
-                                } else {
-                                    this.avatarPreviewUri = this.avatarUrl
-                                }
-                            })
-
-                        Button(this.getAvatarButtonText())
-                            .width(100.percent)
-                            .height(42)
-                            .enabled(!this.uploadingAvatar && !this.saving)
-                            .backgroundColor(0xFFEAF2FF)
-                            .fontColor(0xFF2F80FF)
-                            .borderRadius(14)
-                            .margin(bottom: 14)
-                            .onClick({ =>
-                                this.chooseAvatar()
-                            })
-
-                        Text("当前简介")
-                            .fontSize(13)
-                            .fontColor(0xFF7E8CA8)
-                            .margin(bottom: 6)
-
-                        Text(this.bio)
-                            .fontSize(14)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 12)
-
-                        TextInput(placeholder: "输入新简介")
-                            .width(100.percent)
-                            .height(72)
-                            .backgroundColor(0xFFF7FAFF)
-                            .borderRadius(16)
-                            .margin(bottom: 16)
-                            .onChange({ v: String =>
-                                this.inputBio = v
-                            })
-
-                        Button(this.getSaveButtonText())
-                            .width(100.percent)
-                            .height(42)
-                            .enabled(!this.saving && !this.uploadingAvatar)
-                            .backgroundColor(0xFF2F80FF)
-                            .fontColor(0xFFFFFFFF)
-                            .borderRadius(14)
-                            .onClick({ =>
-                                this.saveProfile()
-                            })
                     }
-                    .width(100.percent)
-                    .padding(18)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 12)
-
-                    Column {
-                        Text("我报名的活动")
-                            .fontSize(20)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(0xFF24324A)
-                            .margin(bottom: 14)
-
-                        if (!this.hasAnyJoinedEvent()) {
-                            Text("你暂时还没有报名活动")
-                                .fontSize(14)
-                                .fontColor(0xFF7E8CA8)
-                        } else {
-                            if (this.joined1Title != "") {
-                                Column {
-                                    Text(this.joined1Title)
-                                        .fontSize(18)
-                                        .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF24324A)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined1Time)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 4)
-
-                                    Text(this.joined1Location)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined1Status)
-                                        .fontSize(12)
-                                        .fontColor(0xFF2F80FF)
-                                        .margin(bottom: 12)
-
-                                    Button("查看详情")
-                                        .width(100.percent)
-                                        .height(42)
-                                        .backgroundColor(0xFF2F80FF)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ =>
-                                            this.goToEventDetail(
-                                                this.joined1Id,
-                                                this.joined1Title,
-                                                this.joined1Time,
-                                                this.joined1Location,
-                                                this.joined1Status
-                                            )
-                                        })
-                                }
-                                .width(100.percent)
-                                .padding(16)
-                                .backgroundColor(0xFFF4F8FF)
-                                .borderRadius(18)
-                                .margin(bottom: 12)
-                            }
-
-                            if (this.joined2Title != "") {
-                                Column {
-                                    Text(this.joined2Title)
-                                        .fontSize(18)
-                                        .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF24324A)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined2Time)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 4)
-
-                                    Text(this.joined2Location)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined2Status)
-                                        .fontSize(12)
-                                        .fontColor(0xFF2F80FF)
-                                        .margin(bottom: 12)
-
-                                    Button("查看详情")
-                                        .width(100.percent)
-                                        .height(42)
-                                        .backgroundColor(0xFF2F80FF)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ =>
-                                            this.goToEventDetail(
-                                                this.joined2Id,
-                                                this.joined2Title,
-                                                this.joined2Time,
-                                                this.joined2Location,
-                                                this.joined2Status
-                                            )
-                                        })
-                                }
-                                .width(100.percent)
-                                .padding(16)
-                                .backgroundColor(0xFFF4F8FF)
-                                .borderRadius(18)
-                                .margin(bottom: 12)
-                            }
-
-                            if (this.joined3Title != "") {
-                                Column {
-                                    Text(this.joined3Title)
-                                        .fontSize(18)
-                                        .fontWeight(FontWeight.Bold)
-                                        .fontColor(0xFF24324A)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined3Time)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 4)
-
-                                    Text(this.joined3Location)
-                                        .fontSize(13)
-                                        .fontColor(0xFF6D7B99)
-                                        .margin(bottom: 8)
-
-                                    Text(this.joined3Status)
-                                        .fontSize(12)
-                                        .fontColor(0xFF2F80FF)
-                                        .margin(bottom: 12)
-
-                                    Button("查看详情")
-                                        .width(100.percent)
-                                        .height(42)
-                                        .backgroundColor(0xFF2F80FF)
-                                        .fontColor(0xFFFFFFFF)
-                                        .borderRadius(14)
-                                        .onClick({ =>
-                                            this.goToEventDetail(
-                                                this.joined3Id,
-                                                this.joined3Title,
-                                                this.joined3Time,
-                                                this.joined3Location,
-                                                this.joined3Status
-                                            )
-                                        })
-                                }
-                                .width(100.percent)
-                                .padding(16)
-                                .backgroundColor(0xFFF4F8FF)
-                                .borderRadius(18)
-                                .margin(bottom: 12)
-                            }
-                        }
-                    }
-                    .width(100.percent)
-                    .padding(18)
-                    .backgroundColor(0xFFFFFFFF)
-                    .borderRadius(18)
-                    .margin(bottom: 12)
+                    Row {}.height(88)
                 }
                 .width(100.percent)
-                .padding(left: 16, right: 16, top: 16, bottom: 20)
             }
             .layoutWeight(1)
+
+            Row {
+                Text("广场")
+                    .layoutWeight(1).height(40).textAlign(TextAlign.Center).fontSize(14).fontColor(0xFF5E6C84)
+                    .onClick({ _: ClickEvent => Router.push(url: "HomePage") })
+
+                Text("圈子")
+                    .layoutWeight(1).height(40).textAlign(TextAlign.Center).fontSize(14).fontColor(0xFF5E6C84)
+                    .onClick({ _: ClickEvent => Router.push(url: "CirclesPage") })
+
+                Text("+")
+                    .width(52).height(52).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).fontSize(28).fontWeight(FontWeight.Bold).borderRadius(26).textAlign(TextAlign.Center).margin(left: 6, right: 6)
+                    .onClick({ _: ClickEvent => Router.push(url: "CreatePostPage") }) // 默认跳转发帖
+
+                Text("活动")
+                    .layoutWeight(1).height(40).textAlign(TextAlign.Center).fontSize(14).fontColor(0xFF5E6C84)
+                    .onClick({ _: ClickEvent => Router.push(url: "EventsPage") })
+
+                Text("我的")
+                    .layoutWeight(1).height(40).textAlign(TextAlign.Center).fontSize(14).fontWeight(FontWeight.Bold).fontColor(0xFF2F80FF)
+            }
+            .width(100.percent)
+            .padding(left: 10, right: 10, top: 10, bottom: 16)
+            .backgroundColor(0xFFFFFFFF)
         }
         .width(100.percent)
         .height(100.percent)
