@@ -55,35 +55,92 @@ class CircleDetailPage {
     @State var member5Hobbies: String = ""
     @State var member5Role: String = ""
 
+    @State var post1Id: String = ""
     @State var post1Title: String = ""
     @State var post1Content: String = ""
     @State var post1Author: String = ""
+    @State var post1AvatarUrl: String = ""
     @State var post1Time: String = ""
     @State var post1ImageUrl: String = ""
+    @State var post1LikeCount: String = "0"
+    @State var post1CommentCount: String = "0"
+    @State var post1LikedByMe: String = "false"
 
+    @State var post2Id: String = ""
     @State var post2Title: String = ""
     @State var post2Content: String = ""
     @State var post2Author: String = ""
+    @State var post2AvatarUrl: String = ""
     @State var post2Time: String = ""
     @State var post2ImageUrl: String = ""
+    @State var post2LikeCount: String = "0"
+    @State var post2CommentCount: String = "0"
+    @State var post2LikedByMe: String = "false"
 
+    @State var post3Id: String = ""
     @State var post3Title: String = ""
     @State var post3Content: String = ""
     @State var post3Author: String = ""
+    @State var post3AvatarUrl: String = ""
     @State var post3Time: String = ""
     @State var post3ImageUrl: String = ""
+    @State var post3LikeCount: String = "0"
+    @State var post3CommentCount: String = "0"
+    @State var post3LikedByMe: String = "false"
 
+    @State var post4Id: String = ""
     @State var post4Title: String = ""
     @State var post4Content: String = ""
     @State var post4Author: String = ""
+    @State var post4AvatarUrl: String = ""
     @State var post4Time: String = ""
     @State var post4ImageUrl: String = ""
+    @State var post4LikeCount: String = "0"
+    @State var post4CommentCount: String = "0"
+    @State var post4LikedByMe: String = "false"
 
+    @State var post5Id: String = ""
     @State var post5Title: String = ""
     @State var post5Content: String = ""
     @State var post5Author: String = ""
+    @State var post5AvatarUrl: String = ""
     @State var post5Time: String = ""
     @State var post5ImageUrl: String = ""
+    @State var post5LikeCount: String = "0"
+    @State var post5CommentCount: String = "0"
+    @State var post5LikedByMe: String = "false"
+
+    @State var activeCommentPostId: String = ""
+    @State var activeCommentPostTitle: String = ""
+    @State var commentInput: String = ""
+    @State var commentLoading: Bool = false
+    @State var commentSubmitting: Bool = false
+    @State var commentMsg: String = ""
+
+    @State var comment1Name: String = ""
+    @State var comment1AvatarUrl: String = ""
+    @State var comment1Content: String = ""
+    @State var comment1Time: String = ""
+
+    @State var comment2Name: String = ""
+    @State var comment2AvatarUrl: String = ""
+    @State var comment2Content: String = ""
+    @State var comment2Time: String = ""
+
+    @State var comment3Name: String = ""
+    @State var comment3AvatarUrl: String = ""
+    @State var comment3Content: String = ""
+    @State var comment3Time: String = ""
+
+    @State var comment4Name: String = ""
+    @State var comment4AvatarUrl: String = ""
+    @State var comment4Content: String = ""
+    @State var comment4Time: String = ""
+
+    @State var comment5Name: String = ""
+    @State var comment5AvatarUrl: String = ""
+    @State var comment5Content: String = ""
+    @State var comment5Time: String = ""
 
     public func aboutToAppear(): Unit {
         this.circleId = CircleService.getCurrentCircleId()
@@ -108,36 +165,70 @@ class CircleDetailPage {
         return "刷新内容"
     }
 
+    func refreshPage() {
+        this.loadCircleDetail()
+        this.loadMembers()
+        this.loadPosts()
+        if (this.activeCommentPostId != "") {
+            this.loadComments()
+        }
+    }
+
     func clearPosts() {
+        this.post1Id = ""
         this.post1Title = ""
         this.post1Content = ""
         this.post1Author = ""
+        this.post1AvatarUrl = ""
         this.post1Time = ""
         this.post1ImageUrl = ""
+        this.post1LikeCount = "0"
+        this.post1CommentCount = "0"
+        this.post1LikedByMe = "false"
 
+        this.post2Id = ""
         this.post2Title = ""
         this.post2Content = ""
         this.post2Author = ""
+        this.post2AvatarUrl = ""
         this.post2Time = ""
         this.post2ImageUrl = ""
+        this.post2LikeCount = "0"
+        this.post2CommentCount = "0"
+        this.post2LikedByMe = "false"
 
+        this.post3Id = ""
         this.post3Title = ""
         this.post3Content = ""
         this.post3Author = ""
+        this.post3AvatarUrl = ""
         this.post3Time = ""
         this.post3ImageUrl = ""
+        this.post3LikeCount = "0"
+        this.post3CommentCount = "0"
+        this.post3LikedByMe = "false"
 
+        this.post4Id = ""
         this.post4Title = ""
         this.post4Content = ""
         this.post4Author = ""
+        this.post4AvatarUrl = ""
         this.post4Time = ""
         this.post4ImageUrl = ""
+        this.post4LikeCount = "0"
+        this.post4CommentCount = "0"
+        this.post4LikedByMe = "false"
 
+        this.post5Id = ""
         this.post5Title = ""
         this.post5Content = ""
         this.post5Author = ""
+        this.post5AvatarUrl = ""
         this.post5Time = ""
         this.post5ImageUrl = ""
+        this.post5LikeCount = "0"
+        this.post5CommentCount = "0"
+        this.post5LikedByMe = "false"
     }
 
     func clearMembers() {
@@ -259,35 +350,60 @@ class CircleDetailPage {
         CircleService.getCirclePosts(
             this.circleId,
             { raw: String =>
+                this.post1Id = CircleService.extractPostField(raw, 0, "id")
                 this.post1Title = CircleService.extractPostField(raw, 0, "title")
                 this.post1Content = CircleService.extractPostField(raw, 0, "content")
                 this.post1Author = CircleService.extractPostField(raw, 0, "nickname")
+                this.post1AvatarUrl = CircleService.extractPostField(raw, 0, "avatarUrl")
                 this.post1Time = CircleService.extractPostField(raw, 0, "createdAt")
                 this.post1ImageUrl = CircleService.extractPostField(raw, 0, "imageUrl")
+                this.post1LikeCount = CircleService.extractPostField(raw, 0, "likeCount")
+                this.post1CommentCount = CircleService.extractPostField(raw, 0, "commentCount")
+                this.post1LikedByMe = CircleService.extractPostField(raw, 0, "likedByMe")
 
+                this.post2Id = CircleService.extractPostField(raw, 1, "id")
                 this.post2Title = CircleService.extractPostField(raw, 1, "title")
                 this.post2Content = CircleService.extractPostField(raw, 1, "content")
                 this.post2Author = CircleService.extractPostField(raw, 1, "nickname")
+                this.post2AvatarUrl = CircleService.extractPostField(raw, 1, "avatarUrl")
                 this.post2Time = CircleService.extractPostField(raw, 1, "createdAt")
                 this.post2ImageUrl = CircleService.extractPostField(raw, 1, "imageUrl")
+                this.post2LikeCount = CircleService.extractPostField(raw, 1, "likeCount")
+                this.post2CommentCount = CircleService.extractPostField(raw, 1, "commentCount")
+                this.post2LikedByMe = CircleService.extractPostField(raw, 1, "likedByMe")
 
+                this.post3Id = CircleService.extractPostField(raw, 2, "id")
                 this.post3Title = CircleService.extractPostField(raw, 2, "title")
                 this.post3Content = CircleService.extractPostField(raw, 2, "content")
                 this.post3Author = CircleService.extractPostField(raw, 2, "nickname")
+                this.post3AvatarUrl = CircleService.extractPostField(raw, 2, "avatarUrl")
                 this.post3Time = CircleService.extractPostField(raw, 2, "createdAt")
                 this.post3ImageUrl = CircleService.extractPostField(raw, 2, "imageUrl")
+                this.post3LikeCount = CircleService.extractPostField(raw, 2, "likeCount")
+                this.post3CommentCount = CircleService.extractPostField(raw, 2, "commentCount")
+                this.post3LikedByMe = CircleService.extractPostField(raw, 2, "likedByMe")
 
+                this.post4Id = CircleService.extractPostField(raw, 3, "id")
                 this.post4Title = CircleService.extractPostField(raw, 3, "title")
                 this.post4Content = CircleService.extractPostField(raw, 3, "content")
                 this.post4Author = CircleService.extractPostField(raw, 3, "nickname")
+                this.post4AvatarUrl = CircleService.extractPostField(raw, 3, "avatarUrl")
                 this.post4Time = CircleService.extractPostField(raw, 3, "createdAt")
                 this.post4ImageUrl = CircleService.extractPostField(raw, 3, "imageUrl")
+                this.post4LikeCount = CircleService.extractPostField(raw, 3, "likeCount")
+                this.post4CommentCount = CircleService.extractPostField(raw, 3, "commentCount")
+                this.post4LikedByMe = CircleService.extractPostField(raw, 3, "likedByMe")
 
+                this.post5Id = CircleService.extractPostField(raw, 4, "id")
                 this.post5Title = CircleService.extractPostField(raw, 4, "title")
                 this.post5Content = CircleService.extractPostField(raw, 4, "content")
                 this.post5Author = CircleService.extractPostField(raw, 4, "nickname")
+                this.post5AvatarUrl = CircleService.extractPostField(raw, 4, "avatarUrl")
                 this.post5Time = CircleService.extractPostField(raw, 4, "createdAt")
                 this.post5ImageUrl = CircleService.extractPostField(raw, 4, "imageUrl")
+                this.post5LikeCount = CircleService.extractPostField(raw, 4, "likeCount")
+                this.post5CommentCount = CircleService.extractPostField(raw, 4, "commentCount")
+                this.post5LikedByMe = CircleService.extractPostField(raw, 4, "likedByMe")
 
                 this.loading = false
             },
@@ -359,6 +475,162 @@ class CircleDetailPage {
         )
     }
 
+    func postStatsText(likeCount: String, commentCount: String): String {
+        let safeLike = if (likeCount == "") { "0" } else { likeCount }
+        let safeComment = if (commentCount == "") { "0" } else { commentCount }
+        return "点赞 " + safeLike + " · 评论 " + safeComment
+    }
+
+    func likeButtonText(likedByMe: String): String {
+        if (likedByMe == "true") {
+            return "已点赞"
+        }
+        return "点赞"
+    }
+
+    func likePost(postId: String) {
+        CircleService.likePost(
+            postId,
+            { _: String =>
+                this.loadPosts()
+            },
+            { msg: String =>
+                this.errorMsg = msg
+            }
+        )
+    }
+
+    func commentButtonText(postId: String): String {
+        if (postId != "" && postId == this.activeCommentPostId) {
+            return "查看中"
+        }
+        return "评论"
+    }
+
+    func clearComments() {
+        this.comment1Name = ""
+        this.comment1AvatarUrl = ""
+        this.comment1Content = ""
+        this.comment1Time = ""
+
+        this.comment2Name = ""
+        this.comment2AvatarUrl = ""
+        this.comment2Content = ""
+        this.comment2Time = ""
+
+        this.comment3Name = ""
+        this.comment3AvatarUrl = ""
+        this.comment3Content = ""
+        this.comment3Time = ""
+
+        this.comment4Name = ""
+        this.comment4AvatarUrl = ""
+        this.comment4Content = ""
+        this.comment4Time = ""
+
+        this.comment5Name = ""
+        this.comment5AvatarUrl = ""
+        this.comment5Content = ""
+        this.comment5Time = ""
+    }
+
+    func hasComments(): Bool {
+        return this.comment1Content != "" ||
+            this.comment2Content != "" ||
+            this.comment3Content != "" ||
+            this.comment4Content != "" ||
+            this.comment5Content != ""
+    }
+
+    func openComments(postId: String, title: String) {
+        if (postId == "") {
+            return
+        }
+
+        this.activeCommentPostId = postId
+        this.activeCommentPostTitle = title
+        this.commentInput = ""
+        this.commentMsg = ""
+        this.loadComments()
+    }
+
+    func loadComments() {
+        if (this.activeCommentPostId == "") {
+            return
+        }
+
+        this.commentLoading = true
+        this.commentMsg = ""
+        this.clearComments()
+
+        CircleService.getPostComments(
+            this.activeCommentPostId,
+            { raw: String =>
+                this.comment1Name = CircleService.extractCommentField(raw, 0, "nickname")
+                this.comment1AvatarUrl = CircleService.extractCommentField(raw, 0, "avatarUrl")
+                this.comment1Content = CircleService.extractCommentField(raw, 0, "content")
+                this.comment1Time = CircleService.extractCommentField(raw, 0, "createdAt")
+
+                this.comment2Name = CircleService.extractCommentField(raw, 1, "nickname")
+                this.comment2AvatarUrl = CircleService.extractCommentField(raw, 1, "avatarUrl")
+                this.comment2Content = CircleService.extractCommentField(raw, 1, "content")
+                this.comment2Time = CircleService.extractCommentField(raw, 1, "createdAt")
+
+                this.comment3Name = CircleService.extractCommentField(raw, 2, "nickname")
+                this.comment3AvatarUrl = CircleService.extractCommentField(raw, 2, "avatarUrl")
+                this.comment3Content = CircleService.extractCommentField(raw, 2, "content")
+                this.comment3Time = CircleService.extractCommentField(raw, 2, "createdAt")
+
+                this.comment4Name = CircleService.extractCommentField(raw, 3, "nickname")
+                this.comment4AvatarUrl = CircleService.extractCommentField(raw, 3, "avatarUrl")
+                this.comment4Content = CircleService.extractCommentField(raw, 3, "content")
+                this.comment4Time = CircleService.extractCommentField(raw, 3, "createdAt")
+
+                this.comment5Name = CircleService.extractCommentField(raw, 4, "nickname")
+                this.comment5AvatarUrl = CircleService.extractCommentField(raw, 4, "avatarUrl")
+                this.comment5Content = CircleService.extractCommentField(raw, 4, "content")
+                this.comment5Time = CircleService.extractCommentField(raw, 4, "createdAt")
+
+                this.commentLoading = false
+            },
+            { msg: String =>
+                this.commentLoading = false
+                this.commentMsg = msg
+            }
+        )
+    }
+
+    func submitComment() {
+        if (this.activeCommentPostId == "") {
+            this.commentMsg = "请先选择要评论的帖子"
+            return
+        }
+
+        if (this.commentInput == "") {
+            this.commentMsg = "评论内容不能为空"
+            return
+        }
+
+        this.commentSubmitting = true
+        this.commentMsg = ""
+
+        CircleService.createPostComment(
+            this.activeCommentPostId,
+            this.commentInput,
+            { _: String =>
+                this.commentSubmitting = false
+                this.commentInput = ""
+                this.commentMsg = "评论已发布"
+                this.loadPosts()
+                this.loadComments()
+            },
+            { msg: String =>
+                this.commentSubmitting = false
+                this.commentMsg = msg
+            }
+        )
+    }
+
     func build() {
         Column {
             Column {
@@ -406,9 +678,7 @@ class CircleDetailPage {
                         .borderRadius(20)
                         .enabled(!this.loading)
                         .onClick({ _: ClickEvent =>
-                            this.loadCircleDetail()
-                            this.loadMembers()
-                            this.loadPosts()
+                            this.refreshPage()
                         })
                 }
                 .width(100.percent)
@@ -854,6 +1124,36 @@ class CircleDetailPage {
 
                     if (this.post1Title != "") {
                         Column {
+                            Text(this.postStatsText(this.post1LikeCount, this.post1CommentCount))
+                                .fontSize(12)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            Row {
+                                Button(this.likeButtonText(this.post1LikedByMe))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .margin(right: 8)
+                                    .onClick({ =>
+                                        this.likePost(this.post1Id)
+                                    })
+
+                                Button(this.commentButtonText(this.post1Id))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .onClick({ =>
+                                        this.openComments(this.post1Id, this.post1Title)
+                                    })
+                            }
+                            .width(100.percent)
+                            .margin(bottom: 10)
+
                             Text(this.post1Title)
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
@@ -873,6 +1173,38 @@ class CircleDetailPage {
                                     .margin(bottom: 10)
                             }
 
+                            Row {
+                                if (this.post1AvatarUrl != "") {
+                                    Image(this.post1AvatarUrl)
+                                        .width(34)
+                                        .height(34)
+                                        .borderRadius(17)
+                                        .margin(right: 10)
+                                } else {
+                                    Row {
+                                        Text("人")
+                                            .fontSize(13)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFFFFFF)
+                                    }
+                                    .width(34)
+                                    .height(34)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFF7AAFFF)
+                                    .borderRadius(17)
+                                    .margin(right: 10)
+                                }
+
+                                Text(this.post1Author)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .layoutWeight(1)
+                            }
+                            .width(100.percent)
+                            .alignItems(VerticalAlign.Center)
+                            .margin(bottom: 8)
+
                             Text(this.post1Author + " · " + this.post1Time)
                                 .fontSize(12)
                                 .fontColor(0xFF2F80FF)
@@ -884,8 +1216,71 @@ class CircleDetailPage {
                         .margin(bottom: 12)
                     }
 
+                    if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post1Id) {
+                        Column {
+                            Text("评论 · " + this.post1Title).fontSize(17).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 10)
+                            TextInput(placeholder: "写下你的评论").width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 10).onChange({ v: String => this.commentInput = v })
+                            Button("发表评论").width(100.percent).height(40).enabled(!this.commentSubmitting).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12).onClick({ => this.submitComment() })
+                            if (this.commentMsg != "") { Text(this.commentMsg).fontSize(13).fontColor(0xFF2F80FF).margin(bottom: 10) }
+                            if (this.commentLoading) {
+                                Text("评论加载中...").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") { Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") { Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") { Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }.width(100.percent).padding(16).backgroundColor(0xFFFFFFFF).borderRadius(18).margin(bottom: 12)
+                    }
+
                     if (this.post2Title != "") {
                         Column {
+                            Text(this.postStatsText(this.post2LikeCount, this.post2CommentCount))
+                                .fontSize(12)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            Row {
+                                Button(this.likeButtonText(this.post2LikedByMe))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .margin(right: 8)
+                                    .onClick({ =>
+                                        this.likePost(this.post2Id)
+                                    })
+
+                                Button(this.commentButtonText(this.post2Id))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .onClick({ =>
+                                        this.openComments(this.post2Id, this.post2Title)
+                                    })
+                            }
+                            .width(100.percent)
+                            .margin(bottom: 10)
+
                             Text(this.post2Title)
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
@@ -905,6 +1300,38 @@ class CircleDetailPage {
                                     .margin(bottom: 10)
                             }
 
+                            Row {
+                                if (this.post2AvatarUrl != "") {
+                                    Image(this.post2AvatarUrl)
+                                        .width(34)
+                                        .height(34)
+                                        .borderRadius(17)
+                                        .margin(right: 10)
+                                } else {
+                                    Row {
+                                        Text("人")
+                                            .fontSize(13)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFFFFFF)
+                                    }
+                                    .width(34)
+                                    .height(34)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFF8DBBFF)
+                                    .borderRadius(17)
+                                    .margin(right: 10)
+                                }
+
+                                Text(this.post2Author)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .layoutWeight(1)
+                            }
+                            .width(100.percent)
+                            .alignItems(VerticalAlign.Center)
+                            .margin(bottom: 8)
+
                             Text(this.post2Author + " · " + this.post2Time)
                                 .fontSize(12)
                                 .fontColor(0xFF2F80FF)
@@ -916,8 +1343,71 @@ class CircleDetailPage {
                         .margin(bottom: 12)
                     }
 
+                    if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post2Id) {
+                        Column {
+                            Text("评论 · " + this.post2Title).fontSize(17).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 10)
+                            TextInput(placeholder: "写下你的评论").width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 10).onChange({ v: String => this.commentInput = v })
+                            Button("发表评论").width(100.percent).height(40).enabled(!this.commentSubmitting).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12).onClick({ => this.submitComment() })
+                            if (this.commentMsg != "") { Text(this.commentMsg).fontSize(13).fontColor(0xFF2F80FF).margin(bottom: 10) }
+                            if (this.commentLoading) {
+                                Text("评论加载中...").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") { Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") { Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") { Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }.width(100.percent).padding(16).backgroundColor(0xFFFFFFFF).borderRadius(18).margin(bottom: 12)
+                    }
+
                     if (this.post3Title != "") {
                         Column {
+                            Text(this.postStatsText(this.post3LikeCount, this.post3CommentCount))
+                                .fontSize(12)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            Row {
+                                Button(this.likeButtonText(this.post3LikedByMe))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .margin(right: 8)
+                                    .onClick({ =>
+                                        this.likePost(this.post3Id)
+                                    })
+
+                                Button(this.commentButtonText(this.post3Id))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .onClick({ =>
+                                        this.openComments(this.post3Id, this.post3Title)
+                                    })
+                            }
+                            .width(100.percent)
+                            .margin(bottom: 10)
+
                             Text(this.post3Title)
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
@@ -937,6 +1427,38 @@ class CircleDetailPage {
                                     .margin(bottom: 10)
                             }
 
+                            Row {
+                                if (this.post3AvatarUrl != "") {
+                                    Image(this.post3AvatarUrl)
+                                        .width(34)
+                                        .height(34)
+                                        .borderRadius(17)
+                                        .margin(right: 10)
+                                } else {
+                                    Row {
+                                        Text("人")
+                                            .fontSize(13)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFFFFFF)
+                                    }
+                                    .width(34)
+                                    .height(34)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFF5A96FF)
+                                    .borderRadius(17)
+                                    .margin(right: 10)
+                                }
+
+                                Text(this.post3Author)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .layoutWeight(1)
+                            }
+                            .width(100.percent)
+                            .alignItems(VerticalAlign.Center)
+                            .margin(bottom: 8)
+
                             Text(this.post3Author + " · " + this.post3Time)
                                 .fontSize(12)
                                 .fontColor(0xFF2F80FF)
@@ -948,8 +1470,71 @@ class CircleDetailPage {
                         .margin(bottom: 12)
                     }
 
+                    if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post3Id) {
+                        Column {
+                            Text("评论 · " + this.post3Title).fontSize(17).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 10)
+                            TextInput(placeholder: "写下你的评论").width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 10).onChange({ v: String => this.commentInput = v })
+                            Button("发表评论").width(100.percent).height(40).enabled(!this.commentSubmitting).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12).onClick({ => this.submitComment() })
+                            if (this.commentMsg != "") { Text(this.commentMsg).fontSize(13).fontColor(0xFF2F80FF).margin(bottom: 10) }
+                            if (this.commentLoading) {
+                                Text("评论加载中...").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") { Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") { Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") { Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }.width(100.percent).padding(16).backgroundColor(0xFFFFFFFF).borderRadius(18).margin(bottom: 12)
+                    }
+
                     if (this.post4Title != "") {
                         Column {
+                            Text(this.postStatsText(this.post4LikeCount, this.post4CommentCount))
+                                .fontSize(12)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            Row {
+                                Button(this.likeButtonText(this.post4LikedByMe))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .margin(right: 8)
+                                    .onClick({ =>
+                                        this.likePost(this.post4Id)
+                                    })
+
+                                Button(this.commentButtonText(this.post4Id))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .onClick({ =>
+                                        this.openComments(this.post4Id, this.post4Title)
+                                    })
+                            }
+                            .width(100.percent)
+                            .margin(bottom: 10)
+
                             Text(this.post4Title)
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
@@ -969,6 +1554,38 @@ class CircleDetailPage {
                                     .margin(bottom: 10)
                             }
 
+                            Row {
+                                if (this.post4AvatarUrl != "") {
+                                    Image(this.post4AvatarUrl)
+                                        .width(34)
+                                        .height(34)
+                                        .borderRadius(17)
+                                        .margin(right: 10)
+                                } else {
+                                    Row {
+                                        Text("人")
+                                            .fontSize(13)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFFFFFF)
+                                    }
+                                    .width(34)
+                                    .height(34)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFF6FA6FF)
+                                    .borderRadius(17)
+                                    .margin(right: 10)
+                                }
+
+                                Text(this.post4Author)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .layoutWeight(1)
+                            }
+                            .width(100.percent)
+                            .alignItems(VerticalAlign.Center)
+                            .margin(bottom: 8)
+
                             Text(this.post4Author + " · " + this.post4Time)
                                 .fontSize(12)
                                 .fontColor(0xFF2F80FF)
@@ -980,8 +1597,71 @@ class CircleDetailPage {
                         .margin(bottom: 12)
                     }
 
+                    if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post4Id) {
+                        Column {
+                            Text("评论 · " + this.post4Title).fontSize(17).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 10)
+                            TextInput(placeholder: "写下你的评论").width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 10).onChange({ v: String => this.commentInput = v })
+                            Button("发表评论").width(100.percent).height(40).enabled(!this.commentSubmitting).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12).onClick({ => this.submitComment() })
+                            if (this.commentMsg != "") { Text(this.commentMsg).fontSize(13).fontColor(0xFF2F80FF).margin(bottom: 10) }
+                            if (this.commentLoading) {
+                                Text("评论加载中...").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") { Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") { Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") { Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }.width(100.percent).padding(16).backgroundColor(0xFFFFFFFF).borderRadius(18).margin(bottom: 12)
+                    }
+
                     if (this.post5Title != "") {
                         Column {
+                            Text(this.postStatsText(this.post5LikeCount, this.post5CommentCount))
+                                .fontSize(12)
+                                .fontColor(0xFF7E8CA8)
+                                .margin(bottom: 8)
+
+                            Row {
+                                Button(this.likeButtonText(this.post5LikedByMe))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFEAF2FF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .margin(right: 8)
+                                    .onClick({ =>
+                                        this.likePost(this.post5Id)
+                                    })
+
+                                Button(this.commentButtonText(this.post5Id))
+                                    .layoutWeight(1)
+                                    .height(34)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .fontColor(0xFF2F80FF)
+                                    .borderRadius(16)
+                                    .onClick({ =>
+                                        this.openComments(this.post5Id, this.post5Title)
+                                    })
+                            }
+                            .width(100.percent)
+                            .margin(bottom: 10)
+
                             Text(this.post5Title)
                                 .fontSize(18)
                                 .fontWeight(FontWeight.Bold)
@@ -1001,6 +1681,38 @@ class CircleDetailPage {
                                     .margin(bottom: 10)
                             }
 
+                            Row {
+                                if (this.post5AvatarUrl != "") {
+                                    Image(this.post5AvatarUrl)
+                                        .width(34)
+                                        .height(34)
+                                        .borderRadius(17)
+                                        .margin(right: 10)
+                                } else {
+                                    Row {
+                                        Text("人")
+                                            .fontSize(13)
+                                            .fontWeight(FontWeight.Bold)
+                                            .fontColor(0xFFFFFFFF)
+                                    }
+                                    .width(34)
+                                    .height(34)
+                                    .justifyContent(FlexAlign.Center)
+                                    .alignItems(VerticalAlign.Center)
+                                    .backgroundColor(0xFF9AC7FF)
+                                    .borderRadius(17)
+                                    .margin(right: 10)
+                                }
+
+                                Text(this.post5Author)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .layoutWeight(1)
+                            }
+                            .width(100.percent)
+                            .alignItems(VerticalAlign.Center)
+                            .margin(bottom: 8)
+
                             Text(this.post5Author + " · " + this.post5Time)
                                 .fontSize(12)
                                 .fontColor(0xFF2F80FF)
@@ -1010,6 +1722,441 @@ class CircleDetailPage {
                         .backgroundColor(0xFFFFFFFF)
                         .borderRadius(18)
                         .margin(bottom: 12)
+                    }
+
+                    if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post5Id) {
+                        Column {
+                            Text("评论 · " + this.post5Title).fontSize(17).fontWeight(FontWeight.Bold).fontColor(0xFF24324A).margin(bottom: 10)
+                            TextInput(placeholder: "写下你的评论").width(100.percent).height(72).backgroundColor(0xFFF7FAFF).borderRadius(16).margin(bottom: 10).onChange({ v: String => this.commentInput = v })
+                            Button("发表评论").width(100.percent).height(40).enabled(!this.commentSubmitting).backgroundColor(0xFF2F80FF).fontColor(0xFFFFFFFF).borderRadius(16).margin(bottom: 12).onClick({ => this.submitComment() })
+                            if (this.commentMsg != "") { Text(this.commentMsg).fontSize(13).fontColor(0xFF2F80FF).margin(bottom: 10) }
+                            if (this.commentLoading) {
+                                Text("评论加载中...").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。").fontSize(13).fontColor(0xFF7E8CA8)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") { Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") { Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                }
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") { Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10) } else { Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10) }
+                                        Column { Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4); Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A) }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                    }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }.width(100.percent).padding(16).backgroundColor(0xFFFFFFFF).borderRadius(18).margin(bottom: 12)
+                    }
+
+                    if (this.activeCommentPostId == "__never__") {
+                        Column {
+                            Text("评论 · " + this.activeCommentPostTitle)
+                                .fontSize(18)
+                                .fontWeight(FontWeight.Bold)
+                                .fontColor(0xFF24324A)
+                                .margin(bottom: 10)
+
+                            TextInput(placeholder: "写下你的评论")
+                                .width(100.percent)
+                                .height(76)
+                                .backgroundColor(0xFFF7FAFF)
+                                .borderRadius(16)
+                                .margin(bottom: 10)
+                                .onChange({ v: String =>
+                                    this.commentInput = v
+                                })
+
+                            Button("发表评论")
+                                .width(100.percent)
+                                .height(40)
+                                .enabled(!this.commentSubmitting)
+                                .backgroundColor(0xFF2F80FF)
+                                .fontColor(0xFFFFFFFF)
+                                .borderRadius(16)
+                                .margin(bottom: 12)
+                                .onClick({ =>
+                                    this.submitComment()
+                                })
+
+                            if (this.commentMsg != "") {
+                                Text(this.commentMsg)
+                                    .fontSize(13)
+                                    .fontColor(0xFF2F80FF)
+                                    .margin(bottom: 10)
+                            }
+
+                            if (this.commentLoading) {
+                                Text("评论加载中...")
+                                    .fontSize(13)
+                                    .fontColor(0xFF7E8CA8)
+                                    .margin(bottom: 8)
+                            } else if (!this.hasComments()) {
+                                Text("还没有评论，来写第一条吧。")
+                                    .fontSize(13)
+                                    .fontColor(0xFF7E8CA8)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .padding(12)
+                                    .borderRadius(14)
+                            } else {
+                                if (this.comment1Content != "") {
+                                    Row {
+                                        if (this.comment1AvatarUrl != "") {
+                                            Image(this.comment1AvatarUrl)
+                                                .width(38)
+                                                .height(38)
+                                                .borderRadius(19)
+                                                .margin(right: 10)
+                                        } else {
+                                            Row {
+                                                Text("人")
+                                                    .fontSize(13)
+                                                    .fontWeight(FontWeight.Bold)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(38)
+                                            .height(38)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .backgroundColor(0xFF7AAFFF)
+                                            .borderRadius(19)
+                                            .margin(right: 10)
+                                        }
+
+                                        Column {
+                                            Text(this.comment1Name + "  " + this.comment1Time)
+                                                .fontSize(12)
+                                                .fontColor(0xFF2F80FF)
+                                                .margin(bottom: 5)
+
+                                            Text(this.comment1Content)
+                                                .fontSize(14)
+                                                .fontColor(0xFF24324A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .width(100.percent)
+                                    .padding(10)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(14)
+                                    .alignItems(VerticalAlign.Center)
+                                    .margin(bottom: 8)
+                                }
+
+                                if (this.comment2Content != "") {
+                                    Row {
+                                        if (this.comment2AvatarUrl != "") {
+                                            Image(this.comment2AvatarUrl)
+                                                .width(38)
+                                                .height(38)
+                                                .borderRadius(19)
+                                                .margin(right: 10)
+                                        } else {
+                                            Row {
+                                                Text("人")
+                                                    .fontSize(13)
+                                                    .fontWeight(FontWeight.Bold)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(38)
+                                            .height(38)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .backgroundColor(0xFF8DBBFF)
+                                            .borderRadius(19)
+                                            .margin(right: 10)
+                                        }
+
+                                        Column {
+                                            Text(this.comment2Name + "  " + this.comment2Time)
+                                                .fontSize(12)
+                                                .fontColor(0xFF2F80FF)
+                                                .margin(bottom: 5)
+
+                                            Text(this.comment2Content)
+                                                .fontSize(14)
+                                                .fontColor(0xFF24324A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .width(100.percent)
+                                    .padding(10)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(14)
+                                    .alignItems(VerticalAlign.Center)
+                                    .margin(bottom: 8)
+                                }
+
+                                if (this.comment3Content != "") {
+                                    Row {
+                                        if (this.comment3AvatarUrl != "") {
+                                            Image(this.comment3AvatarUrl)
+                                                .width(38)
+                                                .height(38)
+                                                .borderRadius(19)
+                                                .margin(right: 10)
+                                        } else {
+                                            Row {
+                                                Text("人")
+                                                    .fontSize(13)
+                                                    .fontWeight(FontWeight.Bold)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(38)
+                                            .height(38)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .backgroundColor(0xFF5A96FF)
+                                            .borderRadius(19)
+                                            .margin(right: 10)
+                                        }
+
+                                        Column {
+                                            Text(this.comment3Name + "  " + this.comment3Time)
+                                                .fontSize(12)
+                                                .fontColor(0xFF2F80FF)
+                                                .margin(bottom: 5)
+
+                                            Text(this.comment3Content)
+                                                .fontSize(14)
+                                                .fontColor(0xFF24324A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .width(100.percent)
+                                    .padding(10)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(14)
+                                    .alignItems(VerticalAlign.Center)
+                                    .margin(bottom: 8)
+                                }
+
+                                if (this.comment4Content != "") {
+                                    Row {
+                                        if (this.comment4AvatarUrl != "") {
+                                            Image(this.comment4AvatarUrl)
+                                                .width(38)
+                                                .height(38)
+                                                .borderRadius(19)
+                                                .margin(right: 10)
+                                        } else {
+                                            Row {
+                                                Text("人")
+                                                    .fontSize(13)
+                                                    .fontWeight(FontWeight.Bold)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(38)
+                                            .height(38)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .backgroundColor(0xFF6FA6FF)
+                                            .borderRadius(19)
+                                            .margin(right: 10)
+                                        }
+
+                                        Column {
+                                            Text(this.comment4Name + "  " + this.comment4Time)
+                                                .fontSize(12)
+                                                .fontColor(0xFF2F80FF)
+                                                .margin(bottom: 5)
+
+                                            Text(this.comment4Content)
+                                                .fontSize(14)
+                                                .fontColor(0xFF24324A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .width(100.percent)
+                                    .padding(10)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(14)
+                                    .alignItems(VerticalAlign.Center)
+                                    .margin(bottom: 8)
+                                }
+
+                                if (this.comment5Content != "") {
+                                    Row {
+                                        if (this.comment5AvatarUrl != "") {
+                                            Image(this.comment5AvatarUrl)
+                                                .width(38)
+                                                .height(38)
+                                                .borderRadius(19)
+                                                .margin(right: 10)
+                                        } else {
+                                            Row {
+                                                Text("人")
+                                                    .fontSize(13)
+                                                    .fontWeight(FontWeight.Bold)
+                                                    .fontColor(0xFFFFFFFF)
+                                            }
+                                            .width(38)
+                                            .height(38)
+                                            .justifyContent(FlexAlign.Center)
+                                            .alignItems(VerticalAlign.Center)
+                                            .backgroundColor(0xFF9AC7FF)
+                                            .borderRadius(19)
+                                            .margin(right: 10)
+                                        }
+
+                                        Column {
+                                            Text(this.comment5Name + "  " + this.comment5Time)
+                                                .fontSize(12)
+                                                .fontColor(0xFF2F80FF)
+                                                .margin(bottom: 5)
+
+                                            Text(this.comment5Content)
+                                                .fontSize(14)
+                                                .fontColor(0xFF24324A)
+                                        }
+                                        .layoutWeight(1)
+                                        .alignItems(HorizontalAlign.Start)
+                                    }
+                                    .width(100.percent)
+                                    .padding(10)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(14)
+                                    .alignItems(VerticalAlign.Center)
+                                }
+                            }
+                        }
+                        .width(100.percent)
+                        .padding(16)
+                        .backgroundColor(0xFFFFFFFF)
+                        .borderRadius(18)
+                        .margin(bottom: 12)
+
+                        if (this.activeCommentPostId != "" && this.activeCommentPostId == this.post1Id) {
+                            Column {
+                                Text("评论 · " + this.post1Title)
+                                    .fontSize(17)
+                                    .fontWeight(FontWeight.Bold)
+                                    .fontColor(0xFF24324A)
+                                    .margin(bottom: 10)
+
+                                TextInput(placeholder: "写下你的评论")
+                                    .width(100.percent)
+                                    .height(72)
+                                    .backgroundColor(0xFFF7FAFF)
+                                    .borderRadius(16)
+                                    .margin(bottom: 10)
+                                    .onChange({ v: String =>
+                                        this.commentInput = v
+                                    })
+
+                                Button("发表评论")
+                                    .width(100.percent)
+                                    .height(40)
+                                    .enabled(!this.commentSubmitting)
+                                    .backgroundColor(0xFF2F80FF)
+                                    .fontColor(0xFFFFFFFF)
+                                    .borderRadius(16)
+                                    .margin(bottom: 12)
+                                    .onClick({ =>
+                                        this.submitComment()
+                                    })
+
+                                if (this.commentMsg != "") {
+                                    Text(this.commentMsg)
+                                        .fontSize(13)
+                                        .fontColor(0xFF2F80FF)
+                                        .margin(bottom: 10)
+                                }
+
+                                if (this.commentLoading) {
+                                    Text("评论加载中...")
+                                        .fontSize(13)
+                                        .fontColor(0xFF7E8CA8)
+                                } else if (!this.hasComments()) {
+                                    Text("还没有评论，来写第一条吧。")
+                                        .fontSize(13)
+                                        .fontColor(0xFF7E8CA8)
+                                } else {
+                                    if (this.comment1Content != "") {
+                                        Row {
+                                            if (this.comment1AvatarUrl != "") {
+                                                Image(this.comment1AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10)
+                                            } else {
+                                                Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF7AAFFF).borderRadius(17).margin(right: 10)
+                                            }
+                                            Column {
+                                                Text(this.comment1Name + " · " + this.comment1Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4)
+                                                Text(this.comment1Content).fontSize(14).fontColor(0xFF24324A)
+                                            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                        }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                    }
+                                    if (this.comment2Content != "") {
+                                        Row {
+                                            if (this.comment2AvatarUrl != "") {
+                                                Image(this.comment2AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10)
+                                            } else {
+                                                Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF8DBBFF).borderRadius(17).margin(right: 10)
+                                            }
+                                            Column {
+                                                Text(this.comment2Name + " · " + this.comment2Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4)
+                                                Text(this.comment2Content).fontSize(14).fontColor(0xFF24324A)
+                                            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                        }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                    }
+                                    if (this.comment3Content != "") {
+                                        Row {
+                                            if (this.comment3AvatarUrl != "") {
+                                                Image(this.comment3AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10)
+                                            } else {
+                                                Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF5A96FF).borderRadius(17).margin(right: 10)
+                                            }
+                                            Column {
+                                                Text(this.comment3Name + " · " + this.comment3Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4)
+                                                Text(this.comment3Content).fontSize(14).fontColor(0xFF24324A)
+                                            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                        }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                    }
+                                    if (this.comment4Content != "") {
+                                        Row {
+                                            if (this.comment4AvatarUrl != "") {
+                                                Image(this.comment4AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10)
+                                            } else {
+                                                Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF6FA6FF).borderRadius(17).margin(right: 10)
+                                            }
+                                            Column {
+                                                Text(this.comment4Name + " · " + this.comment4Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4)
+                                                Text(this.comment4Content).fontSize(14).fontColor(0xFF24324A)
+                                            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                        }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center).margin(bottom: 8)
+                                    }
+                                    if (this.comment5Content != "") {
+                                        Row {
+                                            if (this.comment5AvatarUrl != "") {
+                                                Image(this.comment5AvatarUrl).width(34).height(34).borderRadius(17).margin(right: 10)
+                                            } else {
+                                                Row { Text("人").fontSize(12).fontWeight(FontWeight.Bold).fontColor(0xFFFFFFFF) }.width(34).height(34).justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center).backgroundColor(0xFF9AC7FF).borderRadius(17).margin(right: 10)
+                                            }
+                                            Column {
+                                                Text(this.comment5Name + " · " + this.comment5Time).fontSize(12).fontColor(0xFF2F80FF).margin(bottom: 4)
+                                                Text(this.comment5Content).fontSize(14).fontColor(0xFF24324A)
+                                            }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+                                        }.width(100.percent).padding(10).backgroundColor(0xFFF7FAFF).borderRadius(14).alignItems(VerticalAlign.Center)
+                                    }
+                                }
+                            }
+                            .width(100.percent)
+                            .padding(16)
+                            .backgroundColor(0xFFFFFFFF)
+                            .borderRadius(18)
+                            .margin(bottom: 12)
+                        }
                     }
                 }
                 .width(100.percent)

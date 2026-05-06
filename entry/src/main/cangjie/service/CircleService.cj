@@ -580,6 +580,176 @@ public class CircleService {
         }, options: option)
     }
 
+    public static func likePost(
+        postId: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        if (postId == "") {
+            onError("帖子 ID 不能为空")
+            return
+        }
+
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/${postId}/like", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("点赞失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("点赞失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("点赞失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
+    public static func getPostComments(
+        postId: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        if (postId == "") {
+            onError("帖子 ID 不能为空")
+            return
+        }
+
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.GET,
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/${postId}/comments", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("加载评论失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("加载评论失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("加载评论失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
+    public static func createPostComment(
+        postId: String,
+        content: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ): Unit {
+        if (postId == "") {
+            onError("帖子 ID 不能为空")
+            return
+        }
+
+        if (content == "") {
+            onError("评论内容不能为空")
+            return
+        }
+
+        let token = ApiConfig.getAccessToken()
+        if (token == "") {
+            onError("请先登录")
+            return
+        }
+
+        let safeContent = content.replace("\\", "\\\\").replace("\"", "\\\"").replace("\r", " ").replace("\n", " ")
+        let body = "{\"content\":\"${safeContent}\"}"
+
+        let httpRequest = createHttp()
+        let option = HttpRequestOptions(
+            method: RequestMethod.POST,
+            extraData: HttpData.STRING_DATA(body),
+            expectDataType: HttpDataType.STRING,
+            header: HashMap<String, String>([
+                ("content-type", "application/json"),
+                ("Authorization", "Bearer ${token}")
+            ])
+        )
+
+        httpRequest.request("${ApiConfig.BASE_URL}/posts/${postId}/comments", { err, resp =>
+            if (let Some(_) <- err) {
+                onError("发表评论失败，请检查网络")
+                httpRequest.destroy()
+                return
+            }
+
+            if (let Some(r) <- resp) {
+                let raw = r.result.toString()
+                match (r.responseCode) {
+                    case ResponseCode.OK =>
+                        onSuccess(raw)
+                    case _ =>
+                        let msg = ApiConfig.extractJsonString(raw, "message")
+                        if (msg == "") {
+                            onError("发表评论失败")
+                        } else {
+                            onError(msg)
+                        }
+                }
+            } else {
+                onError("发表评论失败")
+            }
+
+            httpRequest.destroy()
+        }, options: option)
+    }
+
     public static func createPost(
         circleId: String,
         title: String,
@@ -790,6 +960,11 @@ public class CircleService {
                 return ""
             }
 
+            let braceParts = rawValue.split("}")
+            if (braceParts.size > 0) {
+                return braceParts[0]
+            }
+
             return rawValue
         }
 
@@ -925,6 +1100,87 @@ public class CircleService {
             let rawValue = commaParts[0]
             if (rawValue == "null") {
                 return ""
+            }
+
+            let braceParts = rawValue.split("}")
+            if (braceParts.size > 0) {
+                return braceParts[0]
+            }
+
+            return rawValue
+        }
+
+        return ""
+    }
+
+    public static func extractCommentField(raw: String, index: Int64, key: String): String {
+        let listMarker = "\"comments\":["
+        if (!raw.contains(listMarker)) {
+            return ""
+        }
+
+        let listParts = raw.split(listMarker)
+        if (listParts.size < 2) {
+            return ""
+        }
+
+        let tail = listParts[1]
+        let objectParts = tail.split("\"id\":")
+        if (objectParts.size < index + 2) {
+            return ""
+        }
+
+        let objectRaw = objectParts[index + 1]
+
+        if (key == "id") {
+            let commaParts = objectRaw.split(",")
+            if (commaParts.size < 1) {
+                return ""
+            }
+            return commaParts[0]
+        }
+
+        let stringMarker = "\"${key}\":\""
+        if (objectRaw.contains(stringMarker)) {
+            let valueParts = objectRaw.split(stringMarker)
+            if (valueParts.size < 2) {
+                return ""
+            }
+
+            let tailValue = valueParts[1]
+            let finalParts = tailValue.split("\"")
+            if (finalParts.size < 1) {
+                return ""
+            }
+
+            let value = finalParts[0]
+            if (key == "imageUrl" || key == "avatarUrl") {
+                return ApiConfig.normalizeImageUrl(value)
+            }
+            return value
+        }
+
+        let numberMarker = "\"${key}\":"
+        if (objectRaw.contains(numberMarker)) {
+            let valueParts = objectRaw.split(numberMarker)
+            if (valueParts.size < 2) {
+                return ""
+            }
+
+            let tailValue = valueParts[1]
+            let commaParts = tailValue.split(",")
+            if (commaParts.size < 1) {
+                return ""
+            }
+
+            let rawValue = commaParts[0]
+            if (rawValue == "null") {
+                return ""
+            }
+
+            let braceParts = rawValue.split("}")
+            if (braceParts.size > 0) {
+                return braceParts[0]
             }
 
             return rawValue
